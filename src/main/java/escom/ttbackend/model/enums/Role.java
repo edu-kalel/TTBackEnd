@@ -1,4 +1,4 @@
-package escom.ttbackend.model;
+package escom.ttbackend.model.enums;
 
 public enum Role {
     PATIENT,
