@@ -17,6 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class RegistrationDTO {
     private String email;
+    private String clinic;
     private String first_name;
     private String last_name;
     private String password;

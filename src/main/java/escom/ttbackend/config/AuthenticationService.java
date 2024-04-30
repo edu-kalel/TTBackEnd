@@ -6,7 +6,6 @@ import escom.ttbackend.presentation.Mapper;
 import escom.ttbackend.presentation.dto.RegistrationDTO;
 import escom.ttbackend.presentation.dto.UserDTO;
 import escom.ttbackend.repository.UserRepository;
-import escom.ttbackend.service.UserService;
 import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,7 +25,27 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final Mapper mapper;
-    public UserDTO register(RegistrationDTO request) {
+    public UserDTO registerNewClinic(RegistrationDTO request) {
+        if (userRepository.existsById(request.getEmail())){
+            throw new EntityExistsException("User Already Exists");
+        }
+        if (userRepository.existsByClinic(request.getClinic())){
+            throw new EntityExistsException("Clinic Already Exists");
+        }
+        var user = User.builder()
+                .email(request.getEmail())
+                .first_name(request.getFirst_name())
+                .last_name(request.getLast_name())
+                .phone(request.getPhone())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(request.getRole())
+                .date_of_birth(request.getDate_of_birth())
+                .sex(request.isSex())
+                .clinic(request.getClinic())
+                .build();
+        return mapper.mapToUserDTO(userRepository.save(user));
+    }
+    public UserDTO register(RegistrationDTO request, String clinic) {
         if (userRepository.existsById(request.getEmail())){
             throw new EntityExistsException("User Already Exists");
         }
@@ -40,6 +59,7 @@ public class AuthenticationService {
                     .role(request.getRole())
                     .date_of_birth(request.getDate_of_birth())
                     .sex(request.isSex())
+                    .clinic(clinic)
                     .build();
             return mapper.mapToUserDTO(userRepository.save(user));
         }
@@ -55,7 +75,8 @@ public class AuthenticationService {
                     .role(request.getRole())
                     .date_of_birth(request.getDate_of_birth())
                     .sex(request.isSex())
-                    .parent_email(secretary)
+                    .parent(secretary)
+                    .clinic(clinic)
                     .build();
             return mapper.mapToUserDTO(userRepository.save(user));
         }
@@ -71,8 +92,9 @@ public class AuthenticationService {
                     .role(request.getRole())
                     .date_of_birth(request.getDate_of_birth())
                     .sex(request.isSex())
-                    .parent_email(nutritionist)
+                    .parent(nutritionist)
                     .ailments(request.getAilments())
+                    .clinic(clinic)
                     .build();
             return mapper.mapToUserDTO(userRepository.save(user));
         }
@@ -133,5 +155,29 @@ public class AuthenticationService {
                 .role(user.getRole())
                 .name(user.getFirst_name())
                 .build();
+    }
+
+    public UserDTO registerNewPatient(RegistrationDTO request, User parentUser) {
+        if (userRepository.existsById(request.getEmail())){
+            throw new EntityExistsException("User Already Exists");
+        }
+        else{
+//            var nutritionist = userRepository.findByEmail(request.getParent_email())
+//                    .orElseThrow(() -> new UsernameNotFoundException("Nutritionist does not exist"));
+            var user = User.builder()
+                    .email(request.getEmail())
+                    .first_name(request.getFirst_name())
+                    .last_name(request.getLast_name())
+                    .phone(request.getPhone())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(request.getRole())
+                    .date_of_birth(request.getDate_of_birth())
+                    .sex(request.isSex())
+                    .parent(parentUser)
+                    .ailments(request.getAilments())
+                    .clinic(parentUser.getClinic())
+                    .build();
+            return mapper.mapToUserDTO(userRepository.save(user));
+        }
     }
 }

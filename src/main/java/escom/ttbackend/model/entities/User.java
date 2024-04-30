@@ -29,6 +29,8 @@ public class User implements Serializable, UserDetails {
     @Column(length = 50, nullable = false)
     private String email;
     @Column(length = 50, nullable = false)
+    private String clinic;
+    @Column(length = 50, nullable = false)
     private String first_name;
     @Column(length = 50, nullable = false)
     private String last_name;
@@ -43,7 +45,7 @@ public class User implements Serializable, UserDetails {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
             name = "ailments",
             joinColumns = @JoinColumn(name = "patient_email")
@@ -57,25 +59,25 @@ public class User implements Serializable, UserDetails {
 //    )
 //    private Set<Post> posts;
 
-    @OneToMany(mappedBy = "user_email")
+    @OneToMany(mappedBy = "user_email", fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<DietPlan> dietPlans;
 
-    @OneToMany(mappedBy = "nutritionist_email")
+    @OneToMany(mappedBy = "nutritionist", fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<Appointment> appointment_nutritionist;
-    @OneToMany(mappedBy = "patient_email")
+    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<Appointment> appointment_patient;
-    @OneToMany(mappedBy = "patient_email")
+    @OneToMany(mappedBy = "patient_email", fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<Post> posts;
 
     //TODO: one to many self for hierarchies
     @ManyToOne
-    @JoinColumn(name= "parent_email", referencedColumnName = "email")
-    private User parent_email;
-    @OneToMany(mappedBy = "parent_email")
+    @JoinColumn(name= "parent", referencedColumnName = "email")
+    private User parent;
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<User> children;
 

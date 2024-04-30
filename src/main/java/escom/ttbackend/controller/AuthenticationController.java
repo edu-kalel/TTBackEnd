@@ -1,10 +1,19 @@
-package escom.ttbackend.config;
+package escom.ttbackend.controller;
 
+import escom.ttbackend.config.AuthenticationRequest;
+import escom.ttbackend.config.AuthenticationResponse;
+import escom.ttbackend.config.AuthenticationService;
+import escom.ttbackend.config.RegisterRequest;
+import escom.ttbackend.model.entities.User;
 import escom.ttbackend.presentation.dto.RegistrationDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,11 +33,21 @@ public class AuthenticationController {
      * @param registerRequest The RegisterRequest containing the new Staff data.
      * @return {@code ResponseEntity} containing the new Staff details.
      */
-    @PostMapping("/register")
-    public ResponseEntity<Object> register(@RequestBody RegistrationDTO registerRequest){
+    @PostMapping("/new-clinic/register")
+    public ResponseEntity<Object> registerNewClinic(@RequestBody RegistrationDTO registerRequest){
         System.out.println(registerRequest); //TODO remove this debug part
-        return new ResponseEntity<>(service.register(registerRequest), HttpStatus.CREATED);
+        return new ResponseEntity<>(service.registerNewClinic(registerRequest), HttpStatus.CREATED);
     }
+
+    @PostMapping("/user/register")
+    @Operation(summary = "My endpoint", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<Object> register(@RequestBody RegistrationDTO registerRequest){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        System.out.println(registerRequest); //TODO remove this debug part
+        return new ResponseEntity<>(service.register(registerRequest,user.getClinic()), HttpStatus.CREATED);
+    }
+
 
     /**
      * Update of a single Staff given the new Staff details.
@@ -38,6 +57,7 @@ public class AuthenticationController {
      * @throws UsernameNotFoundException If the Staff does not exist.
      */
     @PutMapping("/user/update")
+    @Operation(summary = "My endpoint for updating", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<Object> update(@RequestBody RegisterRequest newRegister){
         System.out.println(newRegister);
         return new ResponseEntity<>(service.update(newRegister), HttpStatus.CREATED);

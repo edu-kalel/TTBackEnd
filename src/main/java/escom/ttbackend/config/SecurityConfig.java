@@ -23,9 +23,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeHttpRequests ->
-                        authorizeHttpRequests.requestMatchers("/**").permitAll()
+                        authorizeHttpRequests.requestMatchers("/auth/authenticate", "/auth/new-clinic/register", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS).permitAll()
                                 .requestMatchers(HttpMethod.DELETE).hasAuthority("ADMIN")
+                                .requestMatchers("/nutri/**").hasAnyAuthority("NUTRITIONIST", "NUTRITIONIST_ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -1,7 +1,6 @@
 package escom.ttbackend.model.entities;
 
 import escom.ttbackend.model.compositekeys.AppointmentId;
-import escom.ttbackend.model.compositekeys.HierarchyId;
 import escom.ttbackend.model.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,15 +21,15 @@ import java.time.LocalDateTime;
 public class Appointment implements Serializable {
     @Id
     @ManyToOne
-    @JoinColumn(name = "nutritionist_email", referencedColumnName = "email", nullable = false)
-    private User nutritionist_email;
+    @JoinColumn(name = "nutritionist", referencedColumnName = "email", nullable = false)
+    private User nutritionist;
     @Id
     private LocalDateTime starting_time;
     @ManyToOne
-    @JoinColumn(name = "patient_email", referencedColumnName = "email", nullable = false)
-    private User patient_email;
+    @JoinColumn(name = "patient", referencedColumnName = "email", nullable = false)
+    private User patient;
     @Column(nullable = false)
-    private LocalDateTime finishing_time;
+    private LocalDateTime ending_time;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AppointmentStatus appointmentStatus;

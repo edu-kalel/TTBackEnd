@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class UserDTO {
     private String email;
+    private String clinic;
     private String first_name;
     private String last_name;
     private LocalDate date_of_birth;

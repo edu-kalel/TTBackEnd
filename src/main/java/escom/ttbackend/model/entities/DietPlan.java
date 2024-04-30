@@ -29,6 +29,8 @@ public class DietPlan implements Serializable {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Goal goal;
+    @Column(nullable = false)
+    private int kcal;
     private int patient_height;
     private int patient_weight;
     @Column(nullable = false)
