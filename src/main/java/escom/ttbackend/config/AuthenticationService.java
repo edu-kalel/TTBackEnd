@@ -3,8 +3,7 @@ package escom.ttbackend.config;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.Role;
 import escom.ttbackend.presentation.Mapper;
-import escom.ttbackend.presentation.dto.RegistrationDTO;
-import escom.ttbackend.presentation.dto.UserDTO;
+import escom.ttbackend.presentation.dto.*;
 import escom.ttbackend.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final Mapper mapper;
-    public UserDTO registerNewClinic(RegistrationDTO request) {
+    public UserDTO registerNewClinic(ClinicRegistrationDTO request) {
         if (userRepository.existsById(request.getEmail())){
             throw new EntityExistsException("User Already Exists");
         }
@@ -64,7 +63,7 @@ public class AuthenticationService {
             return mapper.mapToUserDTO(userRepository.save(user));
         }
         else if ((request.getRole().equals(Role.NUTRITIONIST))||(request.getRole().equals(Role.NUTRITIONIST_ADMIN))){
-            var secretary = userRepository.findByEmail(request.getParent_email())
+            var secretary = userRepository.findById(request.getParent_email())
                     .orElseThrow(() -> new UsernameNotFoundException("Secretary does not exist"));
             var user = User.builder()
                     .email(request.getEmail())
@@ -81,7 +80,7 @@ public class AuthenticationService {
             return mapper.mapToUserDTO(userRepository.save(user));
         }
         else if (request.getRole().equals(Role.PATIENT)){
-            var nutritionist = userRepository.findByEmail(request.getParent_email())
+            var nutritionist = userRepository.findById(request.getParent_email())
                     .orElseThrow(() -> new UsernameNotFoundException("Nutritionist does not exist"));
             var user = User.builder()
                     .email(request.getEmail())
@@ -103,13 +102,13 @@ public class AuthenticationService {
 
     }
 
-    public UserDTO update(RegisterRequest request) {
-        var user = userRepository.findByEmail(request.getEmail())
+    public UserDTO update(RegistrationDTO request) {
+        var user = userRepository.findById(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
 
         if(request.getPassword().isBlank()) {
             user = User.builder().password(
-                            userRepository.findByEmail(request.getEmail()).get().getPassword()
+                            userRepository.findById(request.getEmail()).get().getPassword()
                     )
                     .email(request.getEmail())
                     .first_name(request.getFirst_name())
@@ -137,7 +136,7 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        var user = userRepository.findByEmail(request.getEmail())
+        var user = userRepository.findById(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
         try{
             Authentication authentication = authenticationManager.authenticate(
@@ -157,20 +156,18 @@ public class AuthenticationService {
                 .build();
     }
 
-    public UserDTO registerNewPatient(RegistrationDTO request, User parentUser) {
+    /*public UserDTO registerNewPatient(PatientRegistrationByNutritionistDTO request, User parentUser) {
         if (userRepository.existsById(request.getEmail())){
             throw new EntityExistsException("User Already Exists");
         }
         else{
-//            var nutritionist = userRepository.findByEmail(request.getParent_email())
-//                    .orElseThrow(() -> new UsernameNotFoundException("Nutritionist does not exist"));
             var user = User.builder()
                     .email(request.getEmail())
                     .first_name(request.getFirst_name())
                     .last_name(request.getLast_name())
                     .phone(request.getPhone())
                     .password(passwordEncoder.encode(request.getPassword()))
-                    .role(request.getRole())
+                    .role(Role.PATIENT)
                     .date_of_birth(request.getDate_of_birth())
                     .sex(request.isSex())
                     .parent(parentUser)
@@ -179,5 +176,68 @@ public class AuthenticationService {
                     .build();
             return mapper.mapToUserDTO(userRepository.save(user));
         }
-    }
+    }*/
+
+    /*public UserDTO updatePatient(PatientRegistrationByNutritionistDTO request) {
+        var user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
+
+        if(request.getPassword().isBlank()) {
+            user = User.builder().password(
+//                            userRepository.findByEmail(request.getEmail()).get().getPassword()
+                    user.getPassword()
+                    )
+                    .clinic(user.getClinic())
+                    .email(request.getEmail())
+                    .first_name(request.getFirst_name())
+                    .last_name(request.getLast_name())
+                    .phone(request.getPhone())
+                    .role(Role.PATIENT)
+                    .date_of_birth(request.getDate_of_birth())
+                    .sex(request.isSex())
+                    .ailments(request.getAilments())
+                    .parent(user.getParent())
+                    .build();
+        } else {
+            user = User.builder()
+                    .email(request.getEmail())
+                    .first_name(request.getFirst_name())
+                    .last_name(request.getLast_name())
+                    .phone(request.getPhone())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(Role.PATIENT)
+                    .date_of_birth(request.getDate_of_birth())
+                    .sex(request.isSex())
+                    .ailments(request.getAilments())
+                    .parent(user.getParent())
+                    .clinic(user.getClinic())
+                    .build();
+        }
+
+        return mapper.mapToUserDTO(userRepository.save(user));
+    }*/
+
+    /*public Object registerNewPatient(PatientRegistrationBySecretaryDTO request) {
+        if (userRepository.existsById(request.getEmail())){
+            throw new EntityExistsException("User Already Exists");
+        }
+        else{
+            var nutritionist = userRepository.findByEmail(request.getParent_email())
+                    .orElseThrow(() -> new UsernameNotFoundException("Nutritionist does not exist"));
+            var user = User.builder()
+                    .email(request.getEmail())
+                    .first_name(request.getFirst_name())
+                    .last_name(request.getLast_name())
+                    .phone(request.getPhone())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(Role.PATIENT)
+                    .date_of_birth(request.getDate_of_birth())
+                    .sex(request.isSex())
+                    .parent(nutritionist)
+                    .ailments(request.getAilments())
+                    .clinic(nutritionist.getClinic())
+                    .build();
+            return mapper.mapToUserDTO(userRepository.save(user));
+        }
+    }*/
 }

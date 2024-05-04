@@ -1,8 +1,11 @@
 package escom.ttbackend.presentation;
 
 import escom.ttbackend.model.entities.Appointment;
+import escom.ttbackend.model.entities.Post;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.presentation.dto.AppointmentDTO;
+import escom.ttbackend.presentation.dto.PostDTO;
+import escom.ttbackend.presentation.dto.SimpleUserDTO;
 import escom.ttbackend.presentation.dto.UserDTO;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +32,22 @@ public class Mapper {
                 appointment.getPatient().getEmail(),
                 appointment.getEnding_time(),
                 appointment.getAppointmentStatus()
+        );
+    }
+
+    public PostDTO mapToPostDTO(Post post) {
+        return new PostDTO(
+                post.getPatient().getFirst_name(),
+                post.getDate_time(),
+                post.getContent()
+        );
+    }
+
+    public SimpleUserDTO mapToSimpleUserDTO(User user) {
+        return new SimpleUserDTO(
+                user.getEmail(),
+                user.getFirst_name(),
+                user.getLast_name()
         );
     }
 //    public User mapToNutritionist(RegistrationDTO registrationDTO){

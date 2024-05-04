@@ -14,7 +14,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegistrationDTO {
+public class ClinicRegistrationDTO {
     private String email;
     private String clinic;
     private String first_name;
@@ -24,6 +24,4 @@ public class RegistrationDTO {
     private String phone;
     private boolean sex;
     private Role role;
-    private Set<Ailment> ailments;
-    private String parent_email;
 }

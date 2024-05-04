@@ -69,7 +69,7 @@ public class User implements Serializable, UserDetails {
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<Appointment> appointment_patient;
-    @OneToMany(mappedBy = "patient_email", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<Post> posts;
 

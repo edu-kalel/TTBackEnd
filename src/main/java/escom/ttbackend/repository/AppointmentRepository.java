@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, AppointmentId> {
     List<Appointment> findByNutritionist_Email(String email);
+
+    List<Appointment> findByPatient_Email(String email);
 }

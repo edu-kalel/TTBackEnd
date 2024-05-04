@@ -3,9 +3,10 @@ package escom.ttbackend.controller;
 import escom.ttbackend.config.AuthenticationRequest;
 import escom.ttbackend.config.AuthenticationResponse;
 import escom.ttbackend.config.AuthenticationService;
-import escom.ttbackend.config.RegisterRequest;
 import escom.ttbackend.model.entities.User;
+import escom.ttbackend.presentation.dto.ClinicRegistrationDTO;
 import escom.ttbackend.presentation.dto.RegistrationDTO;
+import escom.ttbackend.service.implementation.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class AuthenticationController {
      * Injected AuthenticationService class.
      */
     private final AuthenticationService service;
+    private final UserService userService;
 
     /**
      * Registers a new entry of Staff to the system.
@@ -34,8 +36,7 @@ public class AuthenticationController {
      * @return {@code ResponseEntity} containing the new Staff details.
      */
     @PostMapping("/new-clinic/register")
-    public ResponseEntity<Object> registerNewClinic(@RequestBody RegistrationDTO registerRequest){
-        System.out.println(registerRequest); //TODO remove this debug part
+    public ResponseEntity<Object> registerNewClinic(@RequestBody ClinicRegistrationDTO registerRequest){
         return new ResponseEntity<>(service.registerNewClinic(registerRequest), HttpStatus.CREATED);
     }
 
@@ -44,8 +45,10 @@ public class AuthenticationController {
     public ResponseEntity<Object> register(@RequestBody RegistrationDTO registerRequest){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
-        System.out.println(registerRequest); //TODO remove this debug part
-        return new ResponseEntity<>(service.register(registerRequest,user.getClinic()), HttpStatus.CREATED);
+        if (userService.isFromSameClinic(user.getClinic(), registerRequest.getParent_email()))
+            return new ResponseEntity<>(service.register(registerRequest,user.getClinic()), HttpStatus.CREATED);
+        else
+            return new ResponseEntity<>("Parent Email is not from same clinic", HttpStatus.UNAUTHORIZED);
     }
 
 
@@ -58,7 +61,7 @@ public class AuthenticationController {
      */
     @PutMapping("/user/update")
     @Operation(summary = "My endpoint for updating", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<Object> update(@RequestBody RegisterRequest newRegister){
+    public ResponseEntity<Object> update(@RequestBody RegistrationDTO newRegister){
         System.out.println(newRegister);
         return new ResponseEntity<>(service.update(newRegister), HttpStatus.CREATED);
     }

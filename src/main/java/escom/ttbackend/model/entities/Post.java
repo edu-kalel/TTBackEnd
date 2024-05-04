@@ -20,8 +20,8 @@ import java.time.LocalDateTime;
 public class Post implements Serializable {
     @Id
     @ManyToOne
-    @JoinColumn(name = "patient_email", referencedColumnName = "email", nullable = false)
-    private User patient_email;
+    @JoinColumn(name = "patient", referencedColumnName = "email", nullable = false)
+    private User patient;
     @Id
     @Column(nullable = false)
     private LocalDateTime date_time;

@@ -25,8 +25,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests.requestMatchers("/auth/authenticate", "/auth/new-clinic/register", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS).permitAll()
-                                .requestMatchers(HttpMethod.DELETE).hasAuthority("ADMIN")
+//                                .requestMatchers(HttpMethod.DELETE).hasAuthority("ADMIN")
                                 .requestMatchers("/nutri/**").hasAnyAuthority("NUTRITIONIST", "NUTRITIONIST_ADMIN")
+                                .requestMatchers("/secretary/**").hasAnyAuthority("SECRETARY", "SECRETARY_ADMIN")
+                                .requestMatchers("/patient/**").hasAuthority("PATIENT")
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

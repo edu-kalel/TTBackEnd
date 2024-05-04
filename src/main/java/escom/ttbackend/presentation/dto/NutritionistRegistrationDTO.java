@@ -14,16 +14,12 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegistrationDTO {
+public class NutritionistRegistrationDTO {
     private String email;
-    private String clinic;
     private String first_name;
     private String last_name;
     private String password;
     private LocalDate date_of_birth;
     private String phone;
     private boolean sex;
-    private Role role;
-    private Set<Ailment> ailments;
-    private String parent_email;
 }
