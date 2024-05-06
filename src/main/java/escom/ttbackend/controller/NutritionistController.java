@@ -1,7 +1,7 @@
 package escom.ttbackend.controller;
 
-import escom.ttbackend.config.AuthenticationService;
 import escom.ttbackend.model.entities.User;
+import escom.ttbackend.model.enums.AppointmentStatus;
 import escom.ttbackend.presentation.dto.*;
 import escom.ttbackend.service.implementation.NutriService;
 import escom.ttbackend.service.implementation.UserService;
@@ -13,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -22,12 +21,10 @@ import java.util.List;
 @SecurityRequirement(name = "bearerAuth")
 public class NutritionistController {
     private final NutriService nutriService;
-    private final AuthenticationService authenticationService;
     private final UserService userService;
 
-    public NutritionistController(NutriService userServiceNutri, AuthenticationService authenticationService, UserService userService) {
+    public NutritionistController(NutriService userServiceNutri, UserService userService) {
         this.nutriService = userServiceNutri;
-        this.authenticationService = authenticationService;
         this.userService = userService;
     }
 
@@ -43,7 +40,7 @@ public class NutritionistController {
     public ResponseEntity<AppointmentDTO> addAppointment(@RequestBody AppointmentRequest appointmentRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
-        AppointmentDTO appointment = nutriService.scheduleAppointment(appointmentRequest, user.getEmail());
+        AppointmentDTO appointment = userService.scheduleAppointment(appointmentRequest, user.getEmail(), AppointmentStatus.CONFIRMED);
         return new ResponseEntity<>(appointment, HttpStatus.OK);
     }
 
@@ -63,7 +60,7 @@ public class NutritionistController {
     }
 
     @PutMapping("/update-patient")
-    public ResponseEntity<Object> update(@RequestBody PatientRegistrationByNutritionistDTO registrationDTO){
+    public ResponseEntity<Object> updatePatient(@RequestBody PatientRegistrationByNutritionistDTO registrationDTO){
         if (!userService.existsById(registrationDTO.getEmail()))
             throw new UsernameNotFoundException("Patient does not exist");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -73,6 +70,14 @@ public class NutritionistController {
         else throw new BadCredentialsException("No permissions over this user");
     }
 
+//    @PutMapping("/update-appointment")
+//    public ResponseEntity<AppointmentDTO> updateAppointment(@RequestBody AppointmentRequest appointmentRequest){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User nutritionist = (User) authentication.getPrincipal();
+//        AppointmentDTO appointment = userService.scheduleAppointment(appointmentRequest, nutritionist.getEmail(), AppointmentStatus.CONFIRMED);
+//        return new ResponseEntity<>(appointment, HttpStatus.OK);
+//    }
+
     @DeleteMapping("/patient/{email}")
     public ResponseEntity<String> deletePatient(@PathVariable String email){
         if (!userService.existsById(email))
@@ -80,7 +85,7 @@ public class NutritionistController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         if (userService.validateParentEmailForUser(email, user.getEmail())){
-            userService.delete(email);
+            userService.deletePatient(email);
             return new ResponseEntity<>("Patient deleted", HttpStatus.OK);
         }
         else throw new BadCredentialsException("No permissions over this user");
@@ -112,6 +117,14 @@ public class NutritionistController {
             return new ResponseEntity<>(posts, HttpStatus.OK);
         }
         else throw new BadCredentialsException("No permissions over this user");
+    }
+
+    @GetMapping("/appointments/solicited")
+    public ResponseEntity<List<AppointmentDTO>> getSolicitedAppointments() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        List<AppointmentDTO> appointments = nutriService.getAppointmentsByStatus(user.getEmail(), AppointmentStatus.SOLICITED);
+        return new ResponseEntity<>(appointments, HttpStatus.OK);
     }
 
 }

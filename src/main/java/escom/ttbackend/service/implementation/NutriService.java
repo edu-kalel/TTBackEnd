@@ -12,6 +12,7 @@ import escom.ttbackend.repository.PostRepository;
 import escom.ttbackend.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,31 +30,41 @@ public class NutriService{
     private final PasswordEncoder passwordEncoder;
     private final PostRepository postRepository;
 
-    /*public List<UserDTO> getUsersByParentEmail(String parentEmail) {
-        List<User> users = userRepository.findByParent_Email(parentEmail);
-        List<UserDTO> userDTOS = new ArrayList<>();
-        for (User user : users) {
-            userDTOS.add(mapper.mapToUserDTO(user));
-        }
-        return userDTOS;
-    }*/
-
-    public AppointmentDTO scheduleAppointment(AppointmentRequest appointmentRequest, String email) {
-        User nutritionist = userRepository.findById(email).orElseThrow(); //TODO ERROR HANDLING
-        User patient = userRepository.findById(appointmentRequest.getPatient_email()).orElseThrow(); //TODO tmbn aki we
+    /*public AppointmentDTO scheduleAppointment(AppointmentRequest appointmentRequest, String email, AppointmentStatus appointmentStatus) {
+        User nutritionist = userRepository.findById(email).orElseThrow(() -> new UsernameNotFoundException("Nutritionist does not exist"));
+        User patient = userRepository.findById(appointmentRequest.getPatient_email()).orElseThrow(() -> new UsernameNotFoundException("Patient does not exist"));
         if (userService.validateParentEmailForUser(patient.getEmail(), nutritionist.getEmail())) {
+
+            // Check for existing appointments that overlap with the new appointment
+            List<Appointment> existingAppointments = appointmentRepository.findByNutritionistAndTimeOverlap(
+                    nutritionist, appointmentRequest.getStarting_time(), appointmentRequest.getEnding_time());
+
+            // Check if there are any overlapping appointments
+            if (!existingAppointments.isEmpty()) {
+                throw new EntityExistsException("The new appointment overlaps with an existing appointment.");
+            }
+
             var appointment = Appointment.builder()
                     .nutritionist(nutritionist)
                     .starting_time(appointmentRequest.getStarting_time())
                     .patient(patient)
                     .ending_time(appointmentRequest.getEnding_time())
-                    .appointmentStatus(AppointmentStatus.CONFIRMED)
+                    .appointmentStatus(appointmentStatus)
                     .build();
             return mapper.mapToAppointmentDTO(appointmentRepository.save(appointment));
         }
-        else
-            throw new EntityExistsException("Patient is not part of nutritionist"); //TODO improve this exception handling
+        else throw new BadCredentialsException("No permissions over this user");
+    }*/
+
+    public List<AppointmentDTO> getAppointmentsByStatus(String email, AppointmentStatus status) {
+        List<Appointment> appointments = appointmentRepository.findByNutritionist_EmailAndAppointmentStatus(email, status);
+        List<AppointmentDTO> appointmentDTOS = new ArrayList<>();
+        for (Appointment appointment : appointments) {
+            appointmentDTOS.add(mapper.mapToAppointmentDTO(appointment));
+        }
+        return appointmentDTOS;
     }
+
 
     public List<AppointmentDTO> getAllApointments(String email) {
         List<Appointment> appointments = appointmentRepository.findByNutritionist_Email(email);
@@ -123,7 +134,6 @@ public class NutriService{
 
         return mapper.mapToUserDTO(userRepository.save(user));
     }
-
 
     public List<PostDTO> getPostsByPatient(String email) {
         List<Post> posts = postRepository.findByPatient_Email(email);

@@ -8,11 +8,11 @@ import escom.ttbackend.service.implementation.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ public class SecretaryController {
         User secretary = (User) authentication.getPrincipal();
         if (userService.validateParentEmailForUser(registerRequest.getParent_email(), secretary.getEmail()))
             return new ResponseEntity<>(secretaryService.registerNewPatient(registerRequest), HttpStatus.CREATED);
-        else throw new ResponseStatusException(HttpStatus.FORBIDDEN); //TODO improve this
+        else throw new BadCredentialsException("No permissions over this user");
     }
 
     @PostMapping("/new-nutritionist")
@@ -51,12 +51,12 @@ public class SecretaryController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User secretary = (User) authentication.getPrincipal();
         if (!userService.isFromSameClinic(secretary.getClinic(), nutritionistEmail))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN); //TODO lol also improve this (this is getting out of hand)
+            throw new BadCredentialsException("No permissions over this user");
         if (userService.validateParentEmailForUser(nutritionistEmail, secretary.getEmail())) {
             List<UserDTO> patients = userService.getUsersByParentEmail(nutritionistEmail);
             return new ResponseEntity<>(patients, HttpStatus.OK);
         }
-        else throw new ResponseStatusException(HttpStatus.FORBIDDEN);//TODO improoooove
+        else throw new BadCredentialsException("No permissions over this user");
     }
 
     @DeleteMapping("/patient/{email}")
@@ -66,10 +66,10 @@ public class SecretaryController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User secretary = (User) authentication.getPrincipal();
         if (userService.validateGrandpaEmailForUser(email, secretary.getEmail())){
-            userService.delete(email);
+            userService.deletePatient(email);
             return new ResponseEntity<>("Patient deleted", HttpStatus.OK);
         }
-        else throw new ResponseStatusException(HttpStatus.FORBIDDEN); //TODO improve this
+        else throw new BadCredentialsException("No permissions over this user");
     }
 
     @GetMapping("/nutritionists")
@@ -88,6 +88,6 @@ public class SecretaryController {
         User secretary = (User) authentication.getPrincipal();
         if (userService.validateGrandpaEmailForUser(registrationDTO.getEmail(), secretary.getEmail()))
             return new ResponseEntity<>(secretaryService.updatePatient(registrationDTO), HttpStatus.CREATED);
-        else throw new ResponseStatusException(HttpStatus.FORBIDDEN); //TODO improve this
+        else throw new BadCredentialsException("No permissions over this user");
     }
 }
