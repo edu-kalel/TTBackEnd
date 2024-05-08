@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class AppointmentDTO {
+    private Long id_appointment;
     private String nutritionist;
     private LocalDateTime starting_time;
     private String patient;

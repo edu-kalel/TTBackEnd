@@ -11,17 +11,28 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface AppointmentRepository extends JpaRepository<Appointment, AppointmentId> {
+public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
     List<Appointment> findByNutritionist_Email(String email);
 
     List<Appointment> findByPatient_Email(String email);
 
     List<Appointment> findByNutritionist_EmailAndAppointmentStatus(String email, AppointmentStatus status);
 
+//    @Query("SELECT a FROM Appointment a WHERE a.nutritionist = :nutritionist " +
+//            "AND ((a.starting_time BETWEEN :startTime AND :endTime) OR " +
+//            "(a.ending_time BETWEEN :startTime AND :endTime))")
+//    List<Appointment> findByNutritionistAndTimeOverlap(@Param("nutritionist") User nutritionist,
+//                                                       @Param("startTime") LocalDateTime startTime,
+//                                                       @Param("endTime") LocalDateTime endTime);
+
     @Query("SELECT a FROM Appointment a WHERE a.nutritionist = :nutritionist " +
             "AND ((a.starting_time BETWEEN :startTime AND :endTime) OR " +
-            "(a.ending_time BETWEEN :startTime AND :endTime))")
-    List<Appointment> findByNutritionistAndTimeOverlap(@Param("nutritionist") User nutritionist,
-                                                       @Param("startTime") LocalDateTime startTime,
-                                                       @Param("endTime") LocalDateTime endTime);
+            "(a.ending_time BETWEEN :startTime AND :endTime)) " +
+            "AND a.appointmentStatus = :status")
+    List<Appointment> findByNutritionistAndTimeOverlapWithStatus(
+            @Param("nutritionist") User nutritionist,
+            @Param("startTime") LocalDateTime startTime,
+            @Param("endTime") LocalDateTime endTime,
+            @Param("status") AppointmentStatus status);
+
 }

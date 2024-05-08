@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -70,12 +71,36 @@ public class NutritionistController {
         else throw new BadCredentialsException("No permissions over this user");
     }
 
-//    @PutMapping("/update-appointment")
+    @PutMapping("/confirm-appointment/{appointmentId}")
+    public ResponseEntity<String> confirmAppointment(@PathVariable Long appointmentId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User nutritionist = (User) authentication.getPrincipal();
+        nutriService.confirmAppointment(appointmentId, nutritionist);
+        return new ResponseEntity<>("Appointment confirmed", HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete-appointment/{appointmentId}")
+    public ResponseEntity<String> deleteAppointment(@PathVariable Long appointmentId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User nutritionist = (User) authentication.getPrincipal();
+        nutriService.deleteAppointment(appointmentId, nutritionist);
+        return new ResponseEntity<>("Appointment deleted", HttpStatus.OK);
+    }
+
+//    @PutMapping("/update-appointment") //TODO check this man, still not so sure about it
 //    public ResponseEntity<AppointmentDTO> updateAppointment(@RequestBody AppointmentRequest appointmentRequest){
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        User nutritionist = (User) authentication.getPrincipal();
 //        AppointmentDTO appointment = userService.scheduleAppointment(appointmentRequest, nutritionist.getEmail(), AppointmentStatus.CONFIRMED);
 //        return new ResponseEntity<>(appointment, HttpStatus.OK);
+//    }
+
+//    @DeleteMapping("/appointment/{startingTime}")
+//    public ResponseEntity<String> deleteAppointment(@PathVariable LocalDateTime startingTime) {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User nutritionist = (User) authentication.getPrincipal();
+//        nutriService.deleteAppointment(nutritionist, startingTime);
+//        return new ResponseEntity<>("Appointment deleted", HttpStatus.OK);
 //    }
 
     @DeleteMapping("/patient/{email}")
@@ -124,6 +149,14 @@ public class NutritionistController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         List<AppointmentDTO> appointments = nutriService.getAppointmentsByStatus(user.getEmail(), AppointmentStatus.SOLICITED);
+        return new ResponseEntity<>(appointments, HttpStatus.OK);
+    }
+
+    @GetMapping("/appointments/confirmed")
+    public ResponseEntity<List<AppointmentDTO>> getConfirmedAppointments() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        List<AppointmentDTO> appointments = nutriService.getAppointmentsByStatus(user.getEmail(), AppointmentStatus.CONFIRMED);
         return new ResponseEntity<>(appointments, HttpStatus.OK);
     }
 

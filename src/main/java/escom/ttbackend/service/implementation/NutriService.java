@@ -11,8 +11,8 @@ import escom.ttbackend.repository.AppointmentRepository;
 import escom.ttbackend.repository.PostRepository;
 import escom.ttbackend.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -64,6 +64,11 @@ public class NutriService{
         }
         return appointmentDTOS;
     }
+
+//    public void deleteAppointment(User nutritionist, LocalDateTime startingTime) {
+//        AppointmentId appointmentId = new AppointmentId(nutritionist, startingTime);
+//        appointmentRepository.deleteById(appointmentId);
+//    }
 
 
     public List<AppointmentDTO> getAllApointments(String email) {
@@ -142,5 +147,21 @@ public class NutriService{
             postDTOS.add(mapper.mapToPostDTO(post));
         }
         return postDTOS  ;
+    }
+
+    public void confirmAppointment(Long appointmentId, User nutritionist) {
+        Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new EntityNotFoundException("Appointment does not exist"));
+        if (appointment.getNutritionist().getEmail().equals(nutritionist.getEmail())){
+            userService.checkOverlappingAppointments(nutritionist, appointment.getStarting_time(), appointment.getEnding_time());
+            appointment.setAppointmentStatus(AppointmentStatus.CONFIRMED);
+            appointmentRepository.save(appointment);
+        }
+    }
+
+    public void deleteAppointment(Long appointmentId, User nutritionist) {
+        Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new EntityNotFoundException("Appointment does not exist"));
+        if (appointment.getNutritionist().getEmail().equals(nutritionist.getEmail())){
+            appointmentRepository.deleteById(appointmentId);
+        }
     }
 }

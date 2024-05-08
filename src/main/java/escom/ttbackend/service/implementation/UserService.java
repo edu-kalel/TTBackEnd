@@ -19,6 +19,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,14 +101,16 @@ public class UserService {
         User patient = userRepository.findById(appointmentRequest.getPatient_email()).orElseThrow(() -> new UsernameNotFoundException("Patient does not exist"));
         if (validateParentEmailForUser(patient.getEmail(), nutritionist.getEmail())) {
 
-            // Check for existing appointments that overlap with the new appointment
-            List<Appointment> existingAppointments = appointmentRepository.findByNutritionistAndTimeOverlap(
-                    nutritionist, appointmentRequest.getStarting_time(), appointmentRequest.getEnding_time());
+//            // Check for existing appointments that overlap with the new appointment
+//            List<Appointment> existingAppointments = appointmentRepository.findByNutritionistAndTimeOverlap(
+//                    nutritionist, appointmentRequest.getStarting_time(), appointmentRequest.getEnding_time());
+//
+//            // Check if there are any overlapping appointments
+//            if (!existingAppointments.isEmpty()) {
+//                throw new EntityExistsException("The new appointment overlaps with an existing appointment.");
+//            }
 
-            // Check if there are any overlapping appointments
-            if (!existingAppointments.isEmpty()) {
-                throw new EntityExistsException("The new appointment overlaps with an existing appointment.");
-            }
+            checkOverlappingAppointments(nutritionist, appointmentRequest.getStarting_time(), appointmentRequest.getEnding_time());
 
             var appointment = Appointment.builder()
                     .nutritionist(nutritionist)
@@ -119,5 +122,16 @@ public class UserService {
             return mapper.mapToAppointmentDTO(appointmentRepository.save(appointment));
         }
         else throw new BadCredentialsException("No permissions over this user");
+    }
+
+    public void checkOverlappingAppointments(User nutritionist, LocalDateTime startingTime, LocalDateTime endingTime){
+        // Check for existing appointments that overlap with the new appointment
+        List<Appointment> existingAppointments = appointmentRepository.findByNutritionistAndTimeOverlapWithStatus(
+                nutritionist, startingTime, endingTime, AppointmentStatus.CONFIRMED);
+
+        // Check if there are any overlapping appointments
+        if (!existingAppointments.isEmpty()) {
+            throw new EntityExistsException("The new appointment overlaps with an existing appointment.");
+        }
     }
 }

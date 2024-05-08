@@ -27,6 +27,7 @@ public class Mapper {
 
     public AppointmentDTO mapToAppointmentDTO(Appointment appointment){
         return new AppointmentDTO(
+                appointment.getId_appointment(),
                 appointment.getNutritionist().getEmail(),
                 appointment.getStarting_time(),
                 appointment.getPatient().getEmail(),

@@ -17,13 +17,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "appointment")
-@IdClass(AppointmentId.class)
+//@IdClass(AppointmentId.class)
 public class Appointment implements Serializable {
     @Id
+    @GeneratedValue(strategy =GenerationType.IDENTITY)
+    @Column(nullable = false, updatable = false)
+    private Long id_appointment;
+//    @Id
     @ManyToOne
     @JoinColumn(name = "nutritionist", referencedColumnName = "email", nullable = false)
     private User nutritionist;
-    @Id
+//    @Id
     private LocalDateTime starting_time;
     @ManyToOne
     @JoinColumn(name = "patient", referencedColumnName = "email", nullable = false)
