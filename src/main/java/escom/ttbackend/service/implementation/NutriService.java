@@ -2,7 +2,6 @@ package escom.ttbackend.service.implementation;
 
 import escom.ttbackend.model.entities.Appointment;
 import escom.ttbackend.model.entities.DietPlan;
-import escom.ttbackend.model.entities.Post;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.AppointmentStatus;
 import escom.ttbackend.model.enums.Role;

@@ -1,6 +1,5 @@
 package escom.ttbackend.model.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import escom.ttbackend.model.enums.Goal;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,7 +35,13 @@ public class DietPlan implements Serializable {
     @Column(nullable = false)
     private LocalDate date_assigned;
     private String comment;
-    @OneToMany(mappedBy = "id_diet_plan")
-    @JsonBackReference
+//    @OneToMany(mappedBy = "id_diet_plan")
+//    @JsonBackReference
+//    private Set<MealOld> meals;
+    @ElementCollection
+    @CollectionTable(
+            name="meal",
+            joinColumns = @JoinColumn(name = "diet_plan")
+    )
     private Set<Meal> meals;
 }
