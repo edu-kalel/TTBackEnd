@@ -17,4 +17,5 @@ public class UserDTO {
     private String phone;
     private boolean sex;
     private Role role;
+    private String parent_email;
 }

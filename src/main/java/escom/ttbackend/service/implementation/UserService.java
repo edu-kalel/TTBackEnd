@@ -5,10 +5,7 @@ import escom.ttbackend.model.entities.Post;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.AppointmentStatus;
 import escom.ttbackend.presentation.Mapper;
-import escom.ttbackend.presentation.dto.AppointmentDTO;
-import escom.ttbackend.presentation.dto.AppointmentRequest;
-import escom.ttbackend.presentation.dto.SimpleUserDTO;
-import escom.ttbackend.presentation.dto.UserDTO;
+import escom.ttbackend.presentation.dto.*;
 import escom.ttbackend.repository.AppointmentRepository;
 import escom.ttbackend.repository.PostRepository;
 import escom.ttbackend.repository.UserRepository;
@@ -67,7 +64,7 @@ public class UserService {
         }
         return false;
     }
-    public boolean isFromSameClinic(String clinic, String userEmail) {
+    public boolean isFromClinic(String clinic, String userEmail) {
         User user = userRepository.findById(userEmail).orElseThrow();
         return user.getClinic().equals(clinic);
     }
@@ -133,5 +130,14 @@ public class UserService {
         if (!existingAppointments.isEmpty()) {
             throw new EntityExistsException("The new appointment overlaps with an existing appointment.");
         }
+    }
+
+    public List<PostDTO> getPostsByPatient(String email) {
+        List<Post> posts = postRepository.findByPatient_Email(email);
+        List<PostDTO> postDTOS = new ArrayList<>();
+        for (Post post : posts) {
+            postDTOS.add(mapper.mapToPostDTO(post));
+        }
+        return postDTOS;
     }
 }

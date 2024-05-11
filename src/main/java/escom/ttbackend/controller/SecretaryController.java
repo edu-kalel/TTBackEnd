@@ -39,18 +39,18 @@ public class SecretaryController {
         else throw new BadCredentialsException("No permissions over this user");
     }
 
-    @PostMapping("/new-nutritionist")
-    public ResponseEntity<UserDTO> registerNewNutritionist(@RequestBody NutritionistRegistrationDTO registerRequest){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User secretary = (User) authentication.getPrincipal();
-        return new ResponseEntity<>(secretaryService.registerNewNutritionist(registerRequest,secretary), HttpStatus.CREATED);
-    }
+//    @PostMapping("/new-nutritionist")
+//    public ResponseEntity<UserDTO> registerNewNutritionist(@RequestBody NutritionistRegistrationDTO registerRequest){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User secretary = (User) authentication.getPrincipal();
+//        return new ResponseEntity<>(secretaryService.registerNewNutritionist(registerRequest,secretary), HttpStatus.CREATED);
+//    }
 
     @GetMapping("/patients-by-nutritionist/{nutritionistEmail}")
     public ResponseEntity<List<UserDTO>> getAllPatients(@PathVariable String nutritionistEmail) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User secretary = (User) authentication.getPrincipal();
-        if (!userService.isFromSameClinic(secretary.getClinic(), nutritionistEmail))
+        if (!userService.isFromClinic(secretary.getClinic(), nutritionistEmail))
             throw new BadCredentialsException("No permissions over this user");
         if (userService.validateParentEmailForUser(nutritionistEmail, secretary.getEmail())) {
             List<UserDTO> patients = userService.getUsersByParentEmail(nutritionistEmail);

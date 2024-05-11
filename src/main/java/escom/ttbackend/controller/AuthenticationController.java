@@ -45,7 +45,7 @@ public class AuthenticationController {
     public ResponseEntity<Object> register(@RequestBody RegistrationDTO registerRequest){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
-        if (userService.isFromSameClinic(user.getClinic(), registerRequest.getParent_email()))
+        if (userService.isFromClinic(user.getClinic(), registerRequest.getParent_email()))
             return new ResponseEntity<>(service.register(registerRequest,user.getClinic()), HttpStatus.CREATED);
         else
             return new ResponseEntity<>("Parent Email is not from same clinic", HttpStatus.UNAUTHORIZED);

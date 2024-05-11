@@ -13,6 +13,11 @@ import org.springframework.stereotype.Component;
 public class Mapper {
 
     public UserDTO mapToUserDTO(User user){
+        String parent_email;
+        if (user.getParent()==null)
+            parent_email="No parent";
+        else
+            parent_email=user.getParent().getEmail();
         return new UserDTO(
                 user.getEmail(),
                 user.getClinic(),
@@ -21,7 +26,8 @@ public class Mapper {
                 user.getDate_of_birth(),
                 user.getPhone(),
                 user.isSex(),
-                user.getRole()
+                user.getRole(),
+                parent_email
         );
     }
 

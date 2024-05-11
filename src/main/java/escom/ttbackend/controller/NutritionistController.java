@@ -1,5 +1,6 @@
 package escom.ttbackend.controller;
 
+import escom.ttbackend.model.entities.DietPlan;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.AppointmentStatus;
 import escom.ttbackend.presentation.dto.*;
@@ -50,6 +51,13 @@ public class NutritionistController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         return new ResponseEntity<>(nutriService.registerNewPatient(registerRequest,user), HttpStatus.CREATED); //TODO check, is this ok? passing the user i mean, theres a reason why i only pass the email
+    }
+
+    @PostMapping("/test/diet_plan")
+    public ResponseEntity<String> newDietPlan(@RequestBody DietPlanRequest request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        return new ResponseEntity<>(nutriService.testNewDietPlan(request,user), HttpStatus.CREATED);
     }
 
     @GetMapping("/appointments")
@@ -138,7 +146,7 @@ public class NutritionistController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User nutri = (User) authentication.getPrincipal();
         if (userService.validateParentEmailForUser(patientEmail, nutri.getEmail())){
-            List<PostDTO> posts = nutriService.getPostsByPatient(patientEmail);
+            List<PostDTO> posts = userService.getPostsByPatient(patientEmail);
             return new ResponseEntity<>(posts, HttpStatus.OK);
         }
         else throw new BadCredentialsException("No permissions over this user");
