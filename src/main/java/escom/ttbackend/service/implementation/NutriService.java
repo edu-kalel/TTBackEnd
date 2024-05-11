@@ -1,6 +1,7 @@
 package escom.ttbackend.service.implementation;
 
 import escom.ttbackend.model.entities.Appointment;
+import escom.ttbackend.model.entities.DietPlan;
 import escom.ttbackend.model.entities.Post;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.AppointmentStatus;
@@ -8,6 +9,7 @@ import escom.ttbackend.model.enums.Role;
 import escom.ttbackend.presentation.Mapper;
 import escom.ttbackend.presentation.dto.*;
 import escom.ttbackend.repository.AppointmentRepository;
+import escom.ttbackend.repository.DietPlanRepository;
 import escom.ttbackend.repository.PostRepository;
 import escom.ttbackend.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
@@ -29,6 +31,7 @@ public class NutriService{
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final PostRepository postRepository;
+    private final DietPlanRepository dietPlanRepository;
 
     /*public AppointmentDTO scheduleAppointment(AppointmentRequest appointmentRequest, String email, AppointmentStatus appointmentStatus) {
         User nutritionist = userRepository.findById(email).orElseThrow(() -> new UsernameNotFoundException("Nutritionist does not exist"));
@@ -101,7 +104,7 @@ public class NutriService{
         }
     }
 
-    public UserDTO updatePatient(PatientRegistrationByNutritionistDTO request) {
+    public UserDTO updatePatient(PatientRegistrationByNutritionistDTO request) {    //TODO maybe refactor this, like -> adminService -> updateUser
         var user = userRepository.findById(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
 
@@ -140,14 +143,14 @@ public class NutriService{
         return mapper.mapToUserDTO(userRepository.save(user));
     }
 
-    public List<PostDTO> getPostsByPatient(String email) {
-        List<Post> posts = postRepository.findByPatient_Email(email);
-        List<PostDTO> postDTOS = new ArrayList<>();
-        for (Post post : posts) {
-            postDTOS.add(mapper.mapToPostDTO(post));
-        }
-        return postDTOS  ;
-    }
+//    public List<PostDTO> getPostsByPatient(String email) {
+//        List<Post> posts = postRepository.findByPatient_Email(email);
+//        List<PostDTO> postDTOS = new ArrayList<>();
+//        for (Post post : posts) {
+//            postDTOS.add(mapper.mapToPostDTO(post));
+//        }
+//        return postDTOS  ;
+//    }
 
     public void confirmAppointment(Long appointmentId, User nutritionist) {
         Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new EntityNotFoundException("Appointment does not exist"));
@@ -163,5 +166,21 @@ public class NutriService{
         if (appointment.getNutritionist().getEmail().equals(nutritionist.getEmail())){
             appointmentRepository.deleteById(appointmentId);
         }
+    }
+
+    public String testNewDietPlan(DietPlanRequest request, User parent) {
+        var user = userRepository.findById(request.getUser_email())
+                .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
+        var dietPlan = DietPlan.builder()
+                .user_email(user)
+                .goal(request.getGoal())
+                .kcal(request.getKcal())
+                .patient_height(request.getPatient_height())
+                .patient_weight(request.getPatient_weight())
+                .date_assigned(request.getDate_assigned())
+                .comment(request.getComment())
+                .meals(request.getMeals())
+                .build();
+        return String.valueOf(dietPlanRepository.save(dietPlan));
     }
 }

@@ -3,7 +3,7 @@ package escom.ttbackend.service.implementation;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.Role;
 import escom.ttbackend.presentation.Mapper;
-import escom.ttbackend.presentation.dto.NutritionistRegistrationDTO;
+import escom.ttbackend.presentation.dto.StaffRegistrationDTO;
 import escom.ttbackend.presentation.dto.PatientRegistrationBySecretaryDTO;
 import escom.ttbackend.presentation.dto.UserDTO;
 import escom.ttbackend.repository.AppointmentRepository;
@@ -47,7 +47,7 @@ public class SecretaryService {
         }
     }
 
-    public UserDTO registerNewNutritionist(NutritionistRegistrationDTO request, User secretary) {
+    public UserDTO registerNewNutritionist(StaffRegistrationDTO request, User secretary) {
         if (userRepository.existsById(request.getEmail())){
             throw new EntityExistsException("User Already Exists");
         }

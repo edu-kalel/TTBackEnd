@@ -29,6 +29,7 @@ public class SecurityConfig {
                                 .requestMatchers("/nutri/**").hasAnyAuthority("NUTRITIONIST", "NUTRITIONIST_ADMIN")
                                 .requestMatchers("/secretary/**").hasAnyAuthority("SECRETARY", "SECRETARY_ADMIN")
                                 .requestMatchers("/patient/**").hasAuthority("PATIENT")
+                                .requestMatchers("/admin/**").hasAnyAuthority("NUTRITIONIST_ADMIN", "SECRETARY_ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
