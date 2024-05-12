@@ -2,6 +2,8 @@ package escom.ttbackend.model.entities;
 
 import escom.ttbackend.model.enums.MealTime;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,8 +17,9 @@ import java.time.DayOfWeek;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Meal {
+    @Enumerated(EnumType.STRING)
     private DayOfWeek dayOfWeek;
+    @Enumerated(EnumType.STRING)
     private MealTime mealTime;
-//    private int quantity;
     private String aliment;
 }

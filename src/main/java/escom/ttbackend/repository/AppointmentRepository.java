@@ -1,6 +1,5 @@
 package escom.ttbackend.repository;
 
-import escom.ttbackend.model.compositekeys.AppointmentId;
 import escom.ttbackend.model.entities.Appointment;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.AppointmentStatus;
@@ -26,13 +25,16 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 //                                                       @Param("endTime") LocalDateTime endTime);
 
     @Query("SELECT a FROM Appointment a WHERE a.nutritionist = :nutritionist " +
-            "AND ((a.starting_time BETWEEN :startTime AND :endTime) OR " +
-            "(a.ending_time BETWEEN :startTime AND :endTime)) " +
+            "AND ((a.startingTime BETWEEN :startTime AND :endTime) OR " +
+            "(a.endingTime BETWEEN :startTime AND :endTime)) " +
             "AND a.appointmentStatus = :status")
     List<Appointment> findByNutritionistAndTimeOverlapWithStatus(
             @Param("nutritionist") User nutritionist,
             @Param("startTime") LocalDateTime startTime,
             @Param("endTime") LocalDateTime endTime,
             @Param("status") AppointmentStatus status);
+
+    List<Appointment> findByNutritionist_EmailAndStartingTimeBetweenAndAppointmentStatusOrderByStartingTimeAsc(
+            String nutritionistEmail, LocalDateTime startOfDay, LocalDateTime endOfDay, AppointmentStatus status);
 
 }

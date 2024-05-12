@@ -23,8 +23,8 @@ public class DietPlan implements Serializable {
     @Column(nullable = false, updatable = false)
     private Long id_diet_plan;
     @ManyToOne
-    @JoinColumn(name = "user_email", referencedColumnName = "email", nullable = false)
-    private User user_email;
+    @JoinColumn(name = "user", referencedColumnName = "email", nullable = false)
+    private User user;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Goal goal;
@@ -33,11 +33,8 @@ public class DietPlan implements Serializable {
     private int patient_height;
     private int patient_weight;
     @Column(nullable = false)
-    private LocalDate date_assigned;
+    private LocalDate date;
     private String comment;
-//    @OneToMany(mappedBy = "id_diet_plan")
-//    @JsonBackReference
-//    private Set<MealOld> meals;
     @ElementCollection
     @CollectionTable(
             name="meal",

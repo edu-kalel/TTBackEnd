@@ -14,12 +14,17 @@ import escom.ttbackend.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -154,7 +159,7 @@ public class NutriService{
     public void confirmAppointment(Long appointmentId, User nutritionist) {
         Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new EntityNotFoundException("Appointment does not exist"));
         if (appointment.getNutritionist().getEmail().equals(nutritionist.getEmail())){
-            userService.checkOverlappingAppointments(nutritionist, appointment.getStarting_time(), appointment.getEnding_time());
+            userService.checkOverlappingAppointments(nutritionist, appointment.getStartingTime(), appointment.getEndingTime());
             appointment.setAppointmentStatus(AppointmentStatus.CONFIRMED);
             appointmentRepository.save(appointment);
         }
@@ -167,19 +172,32 @@ public class NutriService{
         }
     }
 
-    public String testNewDietPlan(DietPlanRequest request, User parent) {
+    public List<AppointmentDTO> getTodayConfirmedAppointments(String nutritionistEmail) {
+        LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime endOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+        return appointmentRepository.findByNutritionist_EmailAndStartingTimeBetweenAndAppointmentStatusOrderByStartingTimeAsc(
+                nutritionistEmail, startOfDay, endOfDay, AppointmentStatus.CONFIRMED)
+                .stream()
+                .map(mapper::mapToAppointmentDTO)
+                .collect(Collectors.toList());
+    }
+
+    public void addNewDietPlan(DietPlanDTO request, User parent) {
         var user = userRepository.findById(request.getUser_email())
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
+        if (!userService.validateParentEmailForUser(request.getUser_email(), parent.getEmail())&&!request.getUser_email().equals(parent.getEmail()))
+            throw new BadCredentialsException("The user you are trying to assign a Diet Plan is not yours to conquer");
         var dietPlan = DietPlan.builder()
-                .user_email(user)
+                .user(user)
                 .goal(request.getGoal())
                 .kcal(request.getKcal())
                 .patient_height(request.getPatient_height())
                 .patient_weight(request.getPatient_weight())
-                .date_assigned(request.getDate_assigned())
+                .date(LocalDate.now())
                 .comment(request.getComment())
                 .meals(request.getMeals())
                 .build();
-        return String.valueOf(dietPlanRepository.save(dietPlan));
+//        return String.valueOf(dietPlanRepository.save(dietPlan));
+        dietPlanRepository.save(dietPlan);
     }
 }

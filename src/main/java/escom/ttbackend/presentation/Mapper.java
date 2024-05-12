@@ -1,12 +1,10 @@
 package escom.ttbackend.presentation;
 
 import escom.ttbackend.model.entities.Appointment;
+import escom.ttbackend.model.entities.DietPlan;
 import escom.ttbackend.model.entities.Post;
 import escom.ttbackend.model.entities.User;
-import escom.ttbackend.presentation.dto.AppointmentDTO;
-import escom.ttbackend.presentation.dto.PostDTO;
-import escom.ttbackend.presentation.dto.SimpleUserDTO;
-import escom.ttbackend.presentation.dto.UserDTO;
+import escom.ttbackend.presentation.dto.*;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,9 +33,9 @@ public class Mapper {
         return new AppointmentDTO(
                 appointment.getId_appointment(),
                 appointment.getNutritionist().getEmail(),
-                appointment.getStarting_time(),
+                appointment.getStartingTime(),
                 appointment.getPatient().getEmail(),
-                appointment.getEnding_time(),
+                appointment.getEndingTime(),
                 appointment.getAppointmentStatus()
         );
     }
@@ -55,6 +53,18 @@ public class Mapper {
                 user.getEmail(),
                 user.getFirst_name(),
                 user.getLast_name()
+        );
+    }
+
+    public DietPlanDTO mapToDietPlanDTO(DietPlan latestDietPlan) {
+        return new DietPlanDTO(
+                latestDietPlan.getUser().getEmail(),
+                latestDietPlan.getGoal(),
+                latestDietPlan.getKcal(),
+                latestDietPlan.getPatient_height(),
+                latestDietPlan.getPatient_weight(),
+                latestDietPlan.getComment(),
+                latestDietPlan.getMeals()
         );
     }
 //    public User mapToNutritionist(RegistrationDTO registrationDTO){

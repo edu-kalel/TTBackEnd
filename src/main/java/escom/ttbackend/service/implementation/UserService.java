@@ -1,12 +1,14 @@
 package escom.ttbackend.service.implementation;
 
 import escom.ttbackend.model.entities.Appointment;
+import escom.ttbackend.model.entities.DietPlan;
 import escom.ttbackend.model.entities.Post;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.AppointmentStatus;
 import escom.ttbackend.presentation.Mapper;
 import escom.ttbackend.presentation.dto.*;
 import escom.ttbackend.repository.AppointmentRepository;
+import escom.ttbackend.repository.DietPlanRepository;
 import escom.ttbackend.repository.PostRepository;
 import escom.ttbackend.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
@@ -27,6 +29,7 @@ public class UserService {
     private final AppointmentRepository appointmentRepository;
     private final Mapper mapper;
     private final PostRepository postRepository;
+    private final DietPlanRepository dietPlanRepository;
 
     public User save(User newUser){
         return userRepository.save(newUser);
@@ -45,8 +48,10 @@ public class UserService {
     public void deletePatient(String email) {
         List<Appointment> appointments = appointmentRepository.findByPatient_Email(email);
         List<Post> posts = postRepository.findByPatient_Email(email);
+        List<DietPlan> dietPlans = dietPlanRepository.findByUser_Email(email);
         appointmentRepository.deleteAll(appointments);
         postRepository.deleteAll(posts);
+        dietPlanRepository.deleteAll(dietPlans);
         userRepository.deleteById(email);
     }
 
@@ -111,9 +116,9 @@ public class UserService {
 
             var appointment = Appointment.builder()
                     .nutritionist(nutritionist)
-                    .starting_time(appointmentRequest.getStarting_time())
+                    .startingTime(appointmentRequest.getStarting_time())
                     .patient(patient)
-                    .ending_time(appointmentRequest.getEnding_time())
+                    .endingTime(appointmentRequest.getEnding_time())
                     .appointmentStatus(appointmentStatus)
                     .build();
             return mapper.mapToAppointmentDTO(appointmentRepository.save(appointment));
@@ -139,5 +144,12 @@ public class UserService {
             postDTOS.add(mapper.mapToPostDTO(post));
         }
         return postDTOS;
+    }
+
+    public DietPlanDTO getLatestDietPlan(String patientEmail) {
+        // Implement logic to retrieve the latest DietPlan for the patient
+        DietPlan latestDietPlan = dietPlanRepository.findFirstByUser_EmailOrderByDateDesc(patientEmail);
+        // Convert DietPlan to DietPlanDTO if necessary
+        return mapper.mapToDietPlanDTO(latestDietPlan);
     }
 }

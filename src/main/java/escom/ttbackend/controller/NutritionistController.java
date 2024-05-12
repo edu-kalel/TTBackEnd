@@ -1,11 +1,11 @@
 package escom.ttbackend.controller;
 
-import escom.ttbackend.model.entities.DietPlan;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.AppointmentStatus;
 import escom.ttbackend.presentation.dto.*;
 import escom.ttbackend.service.implementation.NutriService;
 import escom.ttbackend.service.implementation.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -31,6 +30,7 @@ public class NutritionistController {
     }
 
     @GetMapping("/patients")
+    @Operation(summary = "Returns a list of Patients under the Nutritionist Watch")
     public ResponseEntity<List<UserDTO>> getAllPatients() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -39,6 +39,7 @@ public class NutritionistController {
     }
 
     @PostMapping("/appointment")
+    @Operation(summary = "Schedule an Appointment")
     public ResponseEntity<AppointmentDTO> addAppointment(@RequestBody AppointmentRequest appointmentRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -47,20 +48,24 @@ public class NutritionistController {
     }
 
     @PostMapping("/new-patient")
+    @Operation(summary = "Add New Patient")
     public ResponseEntity<UserDTO> registerNewPatient(@RequestBody PatientRegistrationByNutritionistDTO registerRequest){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         return new ResponseEntity<>(nutriService.registerNewPatient(registerRequest,user), HttpStatus.CREATED); //TODO check, is this ok? passing the user i mean, theres a reason why i only pass the email
     }
 
-    @PostMapping("/test/diet_plan")
-    public ResponseEntity<String> newDietPlan(@RequestBody DietPlanRequest request){
+    @PostMapping("/diet_plan")
+    @Operation(summary = "Creates new Diet Plan for patient")
+    public ResponseEntity<String> newDietPlan(@RequestBody DietPlanDTO request){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
-        return new ResponseEntity<>(nutriService.testNewDietPlan(request,user), HttpStatus.CREATED);
+        nutriService.addNewDietPlan(request,user);
+        return new ResponseEntity<>("Diet Plan created successfully", HttpStatus.CREATED);
     }
 
     @GetMapping("/appointments")
+    @Operation(summary = "Returns a list of all appointments for nutritionist (Confirmed or not)")
     public ResponseEntity<List<AppointmentDTO>> getAllAppointments() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -69,6 +74,7 @@ public class NutritionistController {
     }
 
     @PutMapping("/update-patient")
+    @Operation(summary = "Updates Patient Info")
     public ResponseEntity<Object> updatePatient(@RequestBody PatientRegistrationByNutritionistDTO registrationDTO){
         if (!userService.existsById(registrationDTO.getEmail()))
             throw new UsernameNotFoundException("Patient does not exist");
@@ -80,6 +86,7 @@ public class NutritionistController {
     }
 
     @PutMapping("/confirm-appointment/{appointmentId}")
+    @Operation(summary = "Confirms a solicited appointment by patient")
     public ResponseEntity<String> confirmAppointment(@PathVariable Long appointmentId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User nutritionist = (User) authentication.getPrincipal();
@@ -88,6 +95,7 @@ public class NutritionistController {
     }
 
     @DeleteMapping("/delete-appointment/{appointmentId}")
+    @Operation(summary = "Cancels and deletes an appointment")
     public ResponseEntity<String> deleteAppointment(@PathVariable Long appointmentId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User nutritionist = (User) authentication.getPrincipal();
@@ -112,6 +120,7 @@ public class NutritionistController {
 //    }
 
     @DeleteMapping("/patient/{email}")
+    @Operation(summary = "Deletes a patient")
     public ResponseEntity<String> deletePatient(@PathVariable String email){
         if (!userService.existsById(email))
             throw new UsernameNotFoundException("Patient does not exist");
@@ -125,6 +134,7 @@ public class NutritionistController {
     }
 
     @GetMapping("/my-info")
+    @Operation(summary = "This nutritionist info")
     public ResponseEntity<UserDTO> getMyInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -132,6 +142,7 @@ public class NutritionistController {
     }
 
     @GetMapping("/patient/{email}")
+    @Operation(summary = "Single patient info")
     public ResponseEntity<UserDTO> getPatient(@PathVariable String email){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User nutri = (User) authentication.getPrincipal();
@@ -142,6 +153,7 @@ public class NutritionistController {
     }
 
     @GetMapping("/{patientEmail}/posts")
+    @Operation(summary = "Returns list of posts made by a patient")
     public ResponseEntity<List<PostDTO>> getPosts(@PathVariable String patientEmail){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User nutri = (User) authentication.getPrincipal();
@@ -153,6 +165,7 @@ public class NutritionistController {
     }
 
     @GetMapping("/appointments/solicited")
+    @Operation(summary = "List of solicited appointments by patients")
     public ResponseEntity<List<AppointmentDTO>> getSolicitedAppointments() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -161,10 +174,20 @@ public class NutritionistController {
     }
 
     @GetMapping("/appointments/confirmed")
+    @Operation(summary = "List of confirmed appointments")
     public ResponseEntity<List<AppointmentDTO>> getConfirmedAppointments() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         List<AppointmentDTO> appointments = nutriService.getAppointmentsByStatus(user.getEmail(), AppointmentStatus.CONFIRMED);
+        return new ResponseEntity<>(appointments, HttpStatus.OK);
+    }
+
+    @GetMapping("/today-confirmed-appointments")
+    @Operation(summary = "List of confirmed appointments for today")
+    public ResponseEntity<List<AppointmentDTO>> getTodayConfirmedAppointments() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        List<AppointmentDTO> appointments = nutriService.getTodayConfirmedAppointments(user.getEmail());
         return new ResponseEntity<>(appointments, HttpStatus.OK);
     }
 

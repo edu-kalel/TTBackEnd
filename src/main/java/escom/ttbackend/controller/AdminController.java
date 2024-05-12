@@ -1,10 +1,13 @@
 package escom.ttbackend.controller;
 
 import escom.ttbackend.model.entities.User;
+import escom.ttbackend.presentation.dto.PatientRegistrationBySecretaryDTO;
 import escom.ttbackend.presentation.dto.ReassignationRequest;
 import escom.ttbackend.presentation.dto.StaffRegistrationDTO;
 import escom.ttbackend.presentation.dto.UserDTO;
 import escom.ttbackend.service.implementation.AdminService;
+import escom.ttbackend.service.implementation.NutriService;
+import escom.ttbackend.service.implementation.SecretaryService;
 import escom.ttbackend.service.implementation.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
@@ -16,6 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/admin")
@@ -23,10 +27,12 @@ import java.util.List;
 public class AdminController {
     private final UserService userService;
     private final AdminService adminService;
+    private final SecretaryService secretaryService; //Only for development purposes, can be deleted when dev endpoints are deleted
 
-    public AdminController(UserService userService, AdminService adminService) {
+    public AdminController(UserService userService, AdminService adminService, SecretaryService nutriService) {
         this.userService = userService;
         this.adminService = adminService;
+        this.secretaryService = nutriService;
     }
 
     @DeleteMapping("/user/{email}")
@@ -48,6 +54,28 @@ public class AdminController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User admin = (User) authentication.getPrincipal();
         return new ResponseEntity<>(adminService.registerNewUser(registerRequest,admin.getClinic()), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/development/list/new-staff-user")
+    public ResponseEntity<String> registerNewStaffBatch(@RequestBody Set<StaffRegistrationDTO> registerRequest){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User admin = (User) authentication.getPrincipal();
+        for (StaffRegistrationDTO staffRegistrationDTO : registerRequest){
+            adminService.registerNewUser(staffRegistrationDTO,admin.getClinic());
+        }
+        return new ResponseEntity<>("idk man, maybe it's ok", HttpStatus.CREATED);
+    }
+
+    @PostMapping("/development/list/new-patient")
+    public ResponseEntity<String> registerNewPatientsBatch(@RequestBody Set<PatientRegistrationBySecretaryDTO> registerRequest){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User secretary = (User) authentication.getPrincipal();
+        for (PatientRegistrationBySecretaryDTO patientRegistrationDTO : registerRequest){
+            if (userService.validateParentEmailForUser(patientRegistrationDTO.getParent_email(), secretary.getEmail()))
+                secretaryService.registerNewPatient(patientRegistrationDTO);
+            else throw new BadCredentialsException("No permissions over this user");
+        }
+        return new ResponseEntity<>("idk man, maybe it's ok", HttpStatus.CREATED);
     }
 
     @PutMapping("/update-staff-user")

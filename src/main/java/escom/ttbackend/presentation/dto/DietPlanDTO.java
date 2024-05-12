@@ -7,20 +7,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.util.Set;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DietPlanRequest {
+public class DietPlanDTO {
     private String user_email;
     private Goal goal;
     private int kcal;
     private int patient_height;
     private int patient_weight;
-    private LocalDate date_assigned;
     private String comment;
     private Set<Meal> meals;
 }
