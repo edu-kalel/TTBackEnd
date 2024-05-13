@@ -42,3 +42,6 @@ public class DietPlan implements Serializable {
     )
     private Set<Meal> meals;
 }
+
+
+//REMEMBEEEEER, PATIENT DOESN'T NEED ALL HISTORIAL OF DIET_PLANS, JUST WITH THE LAST ONE IS ENOOOOOUUUUGH :D
