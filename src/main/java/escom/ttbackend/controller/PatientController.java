@@ -55,13 +55,12 @@ public class PatientController {
         User patient = (User) authentication.getPrincipal();
         List<PostDTO> posts = userService.getPostsByPatient(patient.getEmail());
         return new ResponseEntity<>(posts, HttpStatus.OK);
-
     }
 
-    @GetMapping("/latest-diet-plan")
+    @GetMapping("/diet-plan")
     public ResponseEntity<DietPlanDTO> getLatestDietPlan(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User patient = (User) authentication.getPrincipal();
-        return new ResponseEntity<>(userService.getLatestDietPlan(patient.getEmail()), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getDietPlan(patient.getEmail()), HttpStatus.OK);
     }
 }

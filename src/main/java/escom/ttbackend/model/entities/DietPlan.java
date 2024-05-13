@@ -22,7 +22,7 @@ public class DietPlan implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, updatable = false)
     private Long id_diet_plan;
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user", referencedColumnName = "email", nullable = false)
     private User user;
     @Column(nullable = false)
@@ -30,8 +30,6 @@ public class DietPlan implements Serializable {
     private Goal goal;
     @Column(nullable = false)
     private int kcal;
-    private int patient_height;
-    private int patient_weight;
     @Column(nullable = false)
     private LocalDate date;
     private String comment;

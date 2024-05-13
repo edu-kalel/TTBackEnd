@@ -1,17 +1,12 @@
 package escom.ttbackend.service.implementation;
 
-import escom.ttbackend.model.entities.Appointment;
-import escom.ttbackend.model.entities.DietPlan;
-import escom.ttbackend.model.entities.Post;
-import escom.ttbackend.model.entities.User;
+import escom.ttbackend.model.entities.*;
 import escom.ttbackend.model.enums.AppointmentStatus;
 import escom.ttbackend.presentation.Mapper;
 import escom.ttbackend.presentation.dto.*;
-import escom.ttbackend.repository.AppointmentRepository;
-import escom.ttbackend.repository.DietPlanRepository;
-import escom.ttbackend.repository.PostRepository;
-import escom.ttbackend.repository.UserRepository;
+import escom.ttbackend.repository.*;
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +26,7 @@ public class UserService {
     private final Mapper mapper;
     private final PostRepository postRepository;
     private final DietPlanRepository dietPlanRepository;
+    private final PatientRecordRepository patientRecordRepository;
 
     public User save(User newUser){
         return userRepository.save(newUser);
@@ -48,10 +45,10 @@ public class UserService {
     public void deletePatient(String email) {
         List<Appointment> appointments = appointmentRepository.findByPatient_Email(email);
         List<Post> posts = postRepository.findByPatient_Email(email);
-        List<DietPlan> dietPlans = dietPlanRepository.findByUser_Email(email);
+        DietPlan dietPlan = dietPlanRepository.findByUser_Email(email);
         appointmentRepository.deleteAll(appointments);
         postRepository.deleteAll(posts);
-        dietPlanRepository.deleteAll(dietPlans);
+        dietPlanRepository.delete(dietPlan);
         userRepository.deleteById(email);
     }
 
@@ -146,10 +143,26 @@ public class UserService {
         return postDTOS;
     }
 
+    public List<PatientRecordResponse> getPatientRecords(String patientEmail) {
+//        List<PatientRecord> patientRecords = patientRecordRepository.findByPatient_EmailOrderByDateDesc(patientEmail);
+        return patientRecordRepository.findByPatient_EmailOrderByDateDesc(patientEmail)
+                .stream()
+                .map(mapper::mapToPatientRecordDTO)
+                .collect(Collectors.toList());
+    }
+
     public DietPlanDTO getLatestDietPlan(String patientEmail) {
         // Implement logic to retrieve the latest DietPlan for the patient
         DietPlan latestDietPlan = dietPlanRepository.findFirstByUser_EmailOrderByDateDesc(patientEmail);
         // Convert DietPlan to DietPlanDTO if necessary
         return mapper.mapToDietPlanDTO(latestDietPlan);
+    }
+
+    public DietPlanDTO getDietPlan(String email) {
+        DietPlan dietPlan = dietPlanRepository.findByUser_Email(email);
+        if (dietPlan == null) {
+            throw new EntityNotFoundException("No Diet Plan Assigned yet");
+        }
+        return mapper.mapToDietPlanDTO(dietPlan);
     }
 }

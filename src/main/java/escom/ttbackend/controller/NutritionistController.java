@@ -56,12 +56,19 @@ public class NutritionistController {
     }
 
     @PostMapping("/diet_plan")
-    @Operation(summary = "Creates new Diet Plan for patient")
+    @Operation(summary = "Creates or updates Diet Plan for patient")
     public ResponseEntity<String> newDietPlan(@RequestBody DietPlanDTO request){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
-        nutriService.addNewDietPlan(request,user);
-        return new ResponseEntity<>("Diet Plan created successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>(nutriService.addNewDietPlan(request,user), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/patient-record")
+    @Operation(summary = "Adds a patient record (height, weight, comment)")
+    public ResponseEntity<String> newPatientRecord(@RequestBody PatientRecordRequest request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User nutritionist = (User) authentication.getPrincipal();
+        return new ResponseEntity<>(nutriService.addPatientRecord(request, nutritionist.getEmail()), HttpStatus.CREATED);
     }
 
     @GetMapping("/appointments")
@@ -160,6 +167,18 @@ public class NutritionistController {
         if (userService.validateParentEmailForUser(patientEmail, nutri.getEmail())){
             List<PostDTO> posts = userService.getPostsByPatient(patientEmail);
             return new ResponseEntity<>(posts, HttpStatus.OK);
+        }
+        else throw new BadCredentialsException("No permissions over this user");
+    }
+
+    @GetMapping("/{patientEmail}/patientRecords")
+    @Operation(summary = "Returns list of Patient Records")
+    public ResponseEntity<List<PatientRecordResponse>> getPatientRecords(@PathVariable String patientEmail){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User nutri = (User) authentication.getPrincipal();
+        if (userService.validateParentEmailForUser(patientEmail, nutri.getEmail())){
+            List<PatientRecordResponse> patientRecords = userService.getPatientRecords(patientEmail);
+            return new ResponseEntity<>(patientRecords, HttpStatus.OK);
         }
         else throw new BadCredentialsException("No permissions over this user");
     }

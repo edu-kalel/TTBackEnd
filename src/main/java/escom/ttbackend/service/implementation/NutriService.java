@@ -2,15 +2,13 @@ package escom.ttbackend.service.implementation;
 
 import escom.ttbackend.model.entities.Appointment;
 import escom.ttbackend.model.entities.DietPlan;
+import escom.ttbackend.model.entities.PatientRecord;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.AppointmentStatus;
 import escom.ttbackend.model.enums.Role;
 import escom.ttbackend.presentation.Mapper;
 import escom.ttbackend.presentation.dto.*;
-import escom.ttbackend.repository.AppointmentRepository;
-import escom.ttbackend.repository.DietPlanRepository;
-import escom.ttbackend.repository.PostRepository;
-import escom.ttbackend.repository.UserRepository;
+import escom.ttbackend.repository.*;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +34,7 @@ public class NutriService{
     private final PasswordEncoder passwordEncoder;
     private final PostRepository postRepository;
     private final DietPlanRepository dietPlanRepository;
+    private final PatientRecordRepository patientRecordRepository;
 
     /*public AppointmentDTO scheduleAppointment(AppointmentRequest appointmentRequest, String email, AppointmentStatus appointmentStatus) {
         User nutritionist = userRepository.findById(email).orElseThrow(() -> new UsernameNotFoundException("Nutritionist does not exist"));
@@ -182,22 +181,56 @@ public class NutriService{
                 .collect(Collectors.toList());
     }
 
-    public void addNewDietPlan(DietPlanDTO request, User parent) {
+    public String addNewDietPlan(DietPlanDTO request, User parent) {
         var user = userRepository.findById(request.getUser_email())
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
         if (!userService.validateParentEmailForUser(request.getUser_email(), parent.getEmail())&&!request.getUser_email().equals(parent.getEmail()))
             throw new BadCredentialsException("The user you are trying to assign a Diet Plan is not yours to conquer");
-        var dietPlan = DietPlan.builder()
-                .user(user)
-                .goal(request.getGoal())
-                .kcal(request.getKcal())
-                .patient_height(request.getPatient_height())
-                .patient_weight(request.getPatient_weight())
-                .date(LocalDate.now())
+        DietPlan existingDietPlan = dietPlanRepository.findByUser_Email(user.getEmail());
+        if (existingDietPlan == null) {
+            DietPlan dietPlan = DietPlan.builder()
+                    .user(user)
+                    .goal(request.getGoal())
+                    .kcal(request.getKcal())
+                    .date(LocalDate.now())
+                    .comment(request.getComment())
+                    .meals(request.getMeals())
+                    .build();
+            dietPlanRepository.save(dietPlan);
+            return "Diet plan created successfully";
+        } else {
+            existingDietPlan.setGoal(request.getGoal());
+            existingDietPlan.setKcal(request.getKcal());
+            existingDietPlan.setDate(LocalDate.now());
+            existingDietPlan.setComment(request.getComment());
+            existingDietPlan.setMeals(request.getMeals());
+            dietPlanRepository.save(existingDietPlan);
+            return "Diet plan updated successfully";
+        }
+//        var dietPlan = DietPlan.builder()
+//                .user(user)
+//                .goal(request.getGoal())
+//                .kcal(request.getKcal())
+//                .date(LocalDate.now())
+//                .comment(request.getComment())
+//                .meals(request.getMeals())
+//                .build();
+//        dietPlanRepository.save(dietPlan);
+    }
+
+    public String addPatientRecord(PatientRecordRequest request, String nutritionist_email) {
+        var patient = userRepository.findById(request.getPatientEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Patient " + request.getPatientEmail() + " does not exist"));
+        if (!userService.validateParentEmailForUser(request.getPatientEmail(), nutritionist_email))
+            throw new BadCredentialsException("No permissions over patient " + request.getPatientEmail());
+        var patientRecord = PatientRecord.builder()
+                .patient(patient)
+                .patientHeight(request.getPatientHeight())
+                .patientWeight(request.getPatientWeight())
                 .comment(request.getComment())
-                .meals(request.getMeals())
+                .date(LocalDate.now())
                 .build();
-//        return String.valueOf(dietPlanRepository.save(dietPlan));
-        dietPlanRepository.save(dietPlan);
+        patientRecordRepository.save(patientRecord);
+        return "Patient record created successfully";
     }
 }

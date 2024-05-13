@@ -1,9 +1,6 @@
 package escom.ttbackend.presentation;
 
-import escom.ttbackend.model.entities.Appointment;
-import escom.ttbackend.model.entities.DietPlan;
-import escom.ttbackend.model.entities.Post;
-import escom.ttbackend.model.entities.User;
+import escom.ttbackend.model.entities.*;
 import escom.ttbackend.presentation.dto.*;
 import org.springframework.stereotype.Component;
 
@@ -61,10 +58,17 @@ public class Mapper {
                 latestDietPlan.getUser().getEmail(),
                 latestDietPlan.getGoal(),
                 latestDietPlan.getKcal(),
-                latestDietPlan.getPatient_height(),
-                latestDietPlan.getPatient_weight(),
                 latestDietPlan.getComment(),
                 latestDietPlan.getMeals()
+        );
+    }
+
+    public PatientRecordResponse mapToPatientRecordDTO(PatientRecord patientRecord) {
+        return new PatientRecordResponse(
+                patientRecord.getIdPatientRecord(),
+                patientRecord.getPatientHeight(),
+                patientRecord.getPatientWeight(),
+                patientRecord.getComment()
         );
     }
 //    public User mapToNutritionist(RegistrationDTO registrationDTO){
