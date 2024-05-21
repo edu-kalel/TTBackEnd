@@ -40,7 +40,7 @@ public class AuthenticationController {
         return new ResponseEntity<>(service.registerNewClinic(registerRequest), HttpStatus.CREATED);
     }
 
-    @PostMapping("/user/register")
+    /*@PostMapping("/user/register")
     @Operation(summary = "My endpoint", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<Object> register(@RequestBody RegistrationDTO registerRequest){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -49,7 +49,7 @@ public class AuthenticationController {
             return new ResponseEntity<>(service.register(registerRequest,user.getClinic()), HttpStatus.CREATED);
         else
             return new ResponseEntity<>("Parent Email is not from same clinic", HttpStatus.UNAUTHORIZED);
-    }
+    }*/
 
 
     /**
@@ -59,12 +59,12 @@ public class AuthenticationController {
      * @return {@code ResponseEntity} containing the new Staff details.
      * @throws UsernameNotFoundException If the Staff does not exist.
      */
-    @PutMapping("/user/update")
+    /*@PutMapping("/user/update")
     @Operation(summary = "My endpoint for updating", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<Object> update(@RequestBody RegistrationDTO newRegister){
         System.out.println(newRegister);
         return new ResponseEntity<>(service.update(newRegister), HttpStatus.CREATED);
-    }
+    }*/
 
     /**
      * Authenticates the credentials of a Staff member that tries to

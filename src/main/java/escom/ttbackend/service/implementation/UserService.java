@@ -27,6 +27,7 @@ public class UserService {
     private final PostRepository postRepository;
     private final DietPlanRepository dietPlanRepository;
     private final PatientRecordRepository patientRecordRepository;
+    private final EmailService emailService;
 
     public User save(User newUser){
         return userRepository.save(newUser);
@@ -118,7 +119,12 @@ public class UserService {
                     .endingTime(appointmentRequest.getEnding_time())
                     .appointmentStatus(appointmentStatus)
                     .build();
-            return mapper.mapToAppointmentDTO(appointmentRepository.save(appointment));
+            AppointmentDTO appointmentDTO = mapper.mapToAppointmentDTO(appointmentRepository.save(appointment));
+
+            if (appointmentStatus.equals(AppointmentStatus.CONFIRMED))
+                emailService.sendsAppointementCreationMessage(nutritionist, patient, appointment);
+
+            return appointmentDTO;
         }
         else throw new BadCredentialsException("No permissions over this user");
     }

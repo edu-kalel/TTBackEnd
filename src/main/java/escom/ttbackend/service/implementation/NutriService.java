@@ -35,6 +35,7 @@ public class NutriService{
     private final PostRepository postRepository;
     private final DietPlanRepository dietPlanRepository;
     private final PatientRecordRepository patientRecordRepository;
+    private final EmailService emailService;
 
     /*public AppointmentDTO scheduleAppointment(AppointmentRequest appointmentRequest, String email, AppointmentStatus appointmentStatus) {
         User nutritionist = userRepository.findById(email).orElseThrow(() -> new UsernameNotFoundException("Nutritionist does not exist"));
@@ -161,6 +162,8 @@ public class NutriService{
             userService.checkOverlappingAppointments(nutritionist, appointment.getStartingTime(), appointment.getEndingTime());
             appointment.setAppointmentStatus(AppointmentStatus.CONFIRMED);
             appointmentRepository.save(appointment);
+            User patient = appointment.getPatient();
+            emailService.sendsAppointementConfirmationMessage(nutritionist, patient, appointment);
         }
     }
 

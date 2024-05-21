@@ -31,10 +31,10 @@ public class NutritionistController {
 
     @GetMapping("/patients")
     @Operation(summary = "Returns a list of Patients under the Nutritionist Watch")
-    public ResponseEntity<List<UserDTO>> getAllPatients() {
+    public ResponseEntity<List<SimpleUserDTO>> getAllPatients() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
-        List<UserDTO> patients = userService.getUsersByParentEmail(user.getEmail());
+        List<SimpleUserDTO> patients = userService.getSimpleUserDTOsByParentEmail(user.getEmail());
         return new ResponseEntity<>(patients, HttpStatus.OK);
     }
 
