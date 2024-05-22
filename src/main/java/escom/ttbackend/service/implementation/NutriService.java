@@ -174,13 +174,13 @@ public class NutriService{
         }
     }
 
-    public List<AppointmentDTO> getTodayConfirmedAppointments(String nutritionistEmail) {
+    public List<SimpleAppointmentDTO> getTodayConfirmedAppointments(String nutritionistEmail) {
         LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime endOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
         return appointmentRepository.findByNutritionist_EmailAndStartingTimeBetweenAndAppointmentStatusOrderByStartingTimeAsc(
                 nutritionistEmail, startOfDay, endOfDay, AppointmentStatus.CONFIRMED)
                 .stream()
-                .map(mapper::mapToAppointmentDTO)
+                .map(mapper::mapToSimpleAppointmentDTO)
                 .collect(Collectors.toList());
     }
 

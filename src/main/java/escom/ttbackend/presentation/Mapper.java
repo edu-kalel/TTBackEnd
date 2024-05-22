@@ -71,6 +71,14 @@ public class Mapper {
                 patientRecord.getComment()
         );
     }
+
+    public SimpleAppointmentDTO mapToSimpleAppointmentDTO(Appointment appointment) {
+        return new SimpleAppointmentDTO(
+                appointment.getId_appointment(),
+                appointment.getPatient().getEmail(),
+                appointment.getStartingTime()
+        );
+    }
 //    public User mapToNutritionist(RegistrationDTO registrationDTO){
 //        User secretary = userService.getByEmail(registrationDTO.getParent_email());
 //        var user = User.builder()

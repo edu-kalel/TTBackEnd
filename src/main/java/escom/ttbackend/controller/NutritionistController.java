@@ -203,10 +203,10 @@ public class NutritionistController {
 
     @GetMapping("/today-confirmed-appointments")
     @Operation(summary = "List of confirmed appointments for today")
-    public ResponseEntity<List<AppointmentDTO>> getTodayConfirmedAppointments() {
+    public ResponseEntity<List<SimpleAppointmentDTO>> getTodayConfirmedAppointments() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
-        List<AppointmentDTO> appointments = nutriService.getTodayConfirmedAppointments(user.getEmail());
+        List<SimpleAppointmentDTO> appointments = nutriService.getTodayConfirmedAppointments(user.getEmail());
         return new ResponseEntity<>(appointments, HttpStatus.OK);
     }
 
