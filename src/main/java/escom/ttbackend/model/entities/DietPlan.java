@@ -1,11 +1,13 @@
 package escom.ttbackend.model.entities;
 
+import escom.ttbackend.model.converter.FractionConverter;
 import escom.ttbackend.model.enums.Goal;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.math.Fraction;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -39,6 +41,8 @@ public class DietPlan implements Serializable {
             joinColumns = @JoinColumn(name = "diet_plan")
     )
     private Set<Meal> meals;
+    @Convert(converter = FractionConverter.class)
+    private Fraction fraction;
 }
 
 

@@ -75,6 +75,7 @@ public class EmailService{
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setFrom("no.reply.nutrisystem@gmail.com");
             helper.setTo("emendozag1602@alumno.ipn.mx");
+//            helper.setTo("jtirado@ipn.mx");
 //            helper.setTo(patient.getEmail());
             helper.setSubject(subject);
             helper.setText(text, true); // Enable HTML
@@ -96,6 +97,7 @@ public class EmailService{
             helper.setFrom("no.reply.nutrisystem@gmail.com");
 //        helper.setTo("stark02eliu@gmail.com");
             helper.setTo("emendozag1602@alumno.ipn.mx");
+//            helper.setTo("jtirado@ipn.mx");
 //        helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(text, true);

@@ -39,7 +39,7 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .date_of_birth(request.getDate_of_birth())
-                .sex(request.isSex())
+                .sex(request.getSex())
                 .clinic(request.getClinic())
                 .build();
         return mapper.mapToUserDTO(userRepository.save(user));
@@ -57,7 +57,7 @@ public class AuthenticationService {
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(request.getRole())
                     .date_of_birth(request.getDate_of_birth())
-                    .sex(request.isSex())
+                    .sex(request.getSex())
                     .clinic(clinic)
                     .build();
             return mapper.mapToUserDTO(userRepository.save(user));
@@ -73,7 +73,7 @@ public class AuthenticationService {
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(request.getRole())
                     .date_of_birth(request.getDate_of_birth())
-                    .sex(request.isSex())
+                    .sex(request.getSex())
                     .parent(secretary)
                     .clinic(clinic)
                     .build();
@@ -90,7 +90,7 @@ public class AuthenticationService {
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(request.getRole())
                     .date_of_birth(request.getDate_of_birth())
-                    .sex(request.isSex())
+                    .sex(request.getSex())
                     .parent(nutritionist)
                     .ailments(request.getAilments())
                     .clinic(clinic)
@@ -117,7 +117,7 @@ public class AuthenticationService {
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(request.getRole())
                     .date_of_birth(request.getDate_of_birth())
-                    .sex(request.isSex())
+                    .sex(request.getSex())
                     .build();
         } else {
             user = User.builder()
@@ -128,7 +128,7 @@ public class AuthenticationService {
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(request.getRole())
                     .date_of_birth(request.getDate_of_birth())
-                    .sex(request.isSex())
+                    .sex(request.getSex())
                     .build();
         }
 
@@ -169,7 +169,7 @@ public class AuthenticationService {
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(Role.PATIENT)
                     .date_of_birth(request.getDate_of_birth())
-                    .sex(request.isSex())
+                    .sex(request.getSex())
                     .parent(parentUser)
                     .ailments(request.getAilments())
                     .clinic(parentUser.getClinic())
@@ -194,7 +194,7 @@ public class AuthenticationService {
                     .phone(request.getPhone())
                     .role(Role.PATIENT)
                     .date_of_birth(request.getDate_of_birth())
-                    .sex(request.isSex())
+                    .sex(request.getSex())
                     .ailments(request.getAilments())
                     .parent(user.getParent())
                     .build();
@@ -207,7 +207,7 @@ public class AuthenticationService {
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(Role.PATIENT)
                     .date_of_birth(request.getDate_of_birth())
-                    .sex(request.isSex())
+                    .sex(request.getSex())
                     .ailments(request.getAilments())
                     .parent(user.getParent())
                     .clinic(user.getClinic())
@@ -232,7 +232,7 @@ public class AuthenticationService {
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(Role.PATIENT)
                     .date_of_birth(request.getDate_of_birth())
-                    .sex(request.isSex())
+                    .sex(request.getSex())
                     .parent(nutritionist)
                     .ailments(request.getAilments())
                     .clinic(nutritionist.getClinic())

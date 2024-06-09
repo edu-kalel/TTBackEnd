@@ -1,6 +1,7 @@
 package escom.ttbackend.presentation.dto;
 
 import escom.ttbackend.model.enums.Ailment;
+import escom.ttbackend.model.enums.Sex;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +22,6 @@ public class PatientRegistrationByNutritionistDTO {
     private String password;
     private LocalDate date_of_birth;
     private String phone;
-    private boolean sex;
+    private Sex sex;
     private Set<Ailment> ailments;
 }

@@ -8,15 +8,19 @@ import escom.ttbackend.model.enums.AppointmentStatus;
 import escom.ttbackend.model.enums.Role;
 import escom.ttbackend.presentation.Mapper;
 import escom.ttbackend.presentation.dto.*;
+import escom.ttbackend.presentation.dto.calculation.CaloriesCalculationDTO;
+import escom.ttbackend.presentation.dto.calculation.DietRequestBody;
 import escom.ttbackend.repository.*;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -36,32 +40,8 @@ public class NutriService{
     private final DietPlanRepository dietPlanRepository;
     private final PatientRecordRepository patientRecordRepository;
     private final EmailService emailService;
+    private final DietPlanCalculationsService dietPlanCalculationsService;
 
-    /*public AppointmentDTO scheduleAppointment(AppointmentRequest appointmentRequest, String email, AppointmentStatus appointmentStatus) {
-        User nutritionist = userRepository.findById(email).orElseThrow(() -> new UsernameNotFoundException("Nutritionist does not exist"));
-        User patient = userRepository.findById(appointmentRequest.getPatient_email()).orElseThrow(() -> new UsernameNotFoundException("Patient does not exist"));
-        if (userService.validateParentEmailForUser(patient.getEmail(), nutritionist.getEmail())) {
-
-            // Check for existing appointments that overlap with the new appointment
-            List<Appointment> existingAppointments = appointmentRepository.findByNutritionistAndTimeOverlap(
-                    nutritionist, appointmentRequest.getStarting_time(), appointmentRequest.getEnding_time());
-
-            // Check if there are any overlapping appointments
-            if (!existingAppointments.isEmpty()) {
-                throw new EntityExistsException("The new appointment overlaps with an existing appointment.");
-            }
-
-            var appointment = Appointment.builder()
-                    .nutritionist(nutritionist)
-                    .starting_time(appointmentRequest.getStarting_time())
-                    .patient(patient)
-                    .ending_time(appointmentRequest.getEnding_time())
-                    .appointmentStatus(appointmentStatus)
-                    .build();
-            return mapper.mapToAppointmentDTO(appointmentRepository.save(appointment));
-        }
-        else throw new BadCredentialsException("No permissions over this user");
-    }*/
 
     public List<AppointmentDTO> getAppointmentsByStatus(String email, AppointmentStatus status) {
         List<Appointment> appointments = appointmentRepository.findByNutritionist_EmailAndAppointmentStatus(email, status);
@@ -99,7 +79,7 @@ public class NutriService{
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(Role.PATIENT)
                     .date_of_birth(request.getDate_of_birth())
-                    .sex(request.isSex())
+                    .sex(request.getSex())
                     .parent(parentUser)
                     .ailments(request.getAilments())
                     .clinic(parentUser.getClinic())
@@ -124,7 +104,7 @@ public class NutriService{
                     .phone(request.getPhone())
                     .role(Role.PATIENT)
                     .date_of_birth(request.getDate_of_birth())
-                    .sex(request.isSex())
+                    .sex(request.getSex())
                     .ailments(request.getAilments())
                     .parent(user.getParent())
                     .build();
@@ -137,7 +117,7 @@ public class NutriService{
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(Role.PATIENT)
                     .date_of_birth(request.getDate_of_birth())
-                    .sex(request.isSex())
+                    .sex(request.getSex())
                     .ailments(request.getAilments())
                     .parent(user.getParent())
                     .clinic(user.getClinic())
@@ -221,7 +201,7 @@ public class NutriService{
 //        dietPlanRepository.save(dietPlan);
     }
 
-    public String addPatientRecord(PatientRecordRequest request, String nutritionist_email) {
+    public CaloriesCalculationDTO addPatientRecord(PatientRecordRequest request, String nutritionist_email) {
         var patient = userRepository.findById(request.getPatientEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Patient " + request.getPatientEmail() + " does not exist"));
         if (!userService.validateParentEmailForUser(request.getPatientEmail(), nutritionist_email))
@@ -234,6 +214,33 @@ public class NutriService{
                 .date(LocalDate.now())
                 .build();
         patientRecordRepository.save(patientRecord);
-        return "Patient record created successfully";
+        CaloriesCalculationDTO calculation = new CaloriesCalculationDTO();
+        int ger = (dietPlanCalculationsService.calculateGER(patient, patientRecordRepository.findFirstByPatient_EmailOrderByDateDesc(patient.getEmail()),userService.calculateAge(patient.getDate_of_birth())));
+        calculation.setGer(ger);
+        calculation.setGet(dietPlanCalculationsService.calculateGET(ger, request.getActivityLevel(), patient.getSex()));
+        return calculation;
+    }
+
+//    public String calculateDietPlan(String patientEmail, String nutritionistEmail) {
+//        var patient = userRepository.findById(patientEmail)
+//                .orElseThrow(() -> new UsernameNotFoundException("Patient " + patientEmail + " does not exist"));
+//        if (!userService.validateParentEmailForUser(patientEmail, nutritionistEmail))
+//            throw new BadCredentialsException("No permissions over patient " + patientEmail);
+//        int patientAge = userService.calculateAge(patient.getDate_of_birth());
+//        PatientRecord latestPatientRecord = patientRecordRepository.findFirstByPatient_EmailOrderByDateDesc(patientEmail);
+//
+//        return "perame we";
+//    }
+
+    public ResponseEntity<String> calculatePortions(DietRequestBody request, String nutritionist_email, String patientEmail) {
+        var patient = userRepository.findById(patientEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("Patient " + patientEmail + " does not exist"));
+        if (!userService.validateParentEmailForUser(patientEmail, nutritionist_email))
+            throw new BadCredentialsException("No permissions over patient " + patientEmail);
+        return dietPlanCalculationsService.calculatePortions(request);
+    }
+
+    public String orasisi() throws IOException {
+        return dietPlanCalculationsService.orasisi();
     }
 }

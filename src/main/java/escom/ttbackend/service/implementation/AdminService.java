@@ -45,7 +45,7 @@ public class AdminService {
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(request.getRole())
                     .date_of_birth(request.getDate_of_birth())
-                    .sex(request.isSex())
+                    .sex(request.getSex())
                     .parent(parent)
                     .clinic(clinic)
                     .build();
@@ -60,7 +60,7 @@ public class AdminService {
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(request.getRole())
                     .date_of_birth(request.getDate_of_birth())
-                    .sex(request.isSex())
+                    .sex(request.getSex())
                     .clinic(clinic)
                     .build();
             return mapper.mapToUserDTO(userRepository.save(user));

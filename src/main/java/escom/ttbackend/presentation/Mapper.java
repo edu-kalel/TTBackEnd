@@ -20,7 +20,7 @@ public class Mapper {
                 user.getLast_name(),
                 user.getDate_of_birth(),
                 user.getPhone(),
-                user.isSex(),
+                user.getSex(),
                 user.getRole(),
                 parent_email
         );
@@ -73,9 +73,10 @@ public class Mapper {
     }
 
     public SimpleAppointmentDTO mapToSimpleAppointmentDTO(Appointment appointment) {
+        String patient_fullname = appointment.getPatient().getFirst_name()+" "+appointment.getPatient().getLast_name();
         return new SimpleAppointmentDTO(
                 appointment.getId_appointment(),
-                appointment.getPatient().getEmail(),
+                patient_fullname,
                 appointment.getStartingTime()
         );
     }

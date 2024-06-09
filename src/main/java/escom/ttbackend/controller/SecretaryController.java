@@ -40,7 +40,7 @@ public class SecretaryController {
     }
 
 //    @PostMapping("/new-nutritionist")
-//    public ResponseEntity<UserDTO> registerNewNutritionist(@RequestBody NutritionistRegistrationDTO registerRequest){
+//    public ResponseEntity<UserDTO> registerNewNutritionist(@DietRequestBody NutritionistRegistrationDTO registerRequest){
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        User secretary = (User) authentication.getPrincipal();
 //        return new ResponseEntity<>(secretaryService.registerNewNutritionist(registerRequest,secretary), HttpStatus.CREATED);

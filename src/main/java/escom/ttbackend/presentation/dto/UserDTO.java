@@ -1,6 +1,7 @@
 package escom.ttbackend.presentation.dto;
 
 import escom.ttbackend.model.enums.Role;
+import escom.ttbackend.model.enums.Sex;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -15,7 +16,7 @@ public class UserDTO {
     private String last_name;
     private LocalDate date_of_birth;
     private String phone;
-    private boolean sex;
+    private Sex sex;
     private Role role;
     private String parent_email;
 }

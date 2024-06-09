@@ -3,6 +3,7 @@ package escom.ttbackend.model.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import escom.ttbackend.model.enums.Ailment;
 import escom.ttbackend.model.enums.Role;
+import escom.ttbackend.model.enums.Sex;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,7 +42,7 @@ public class User implements Serializable, UserDetails {
     @Column(nullable = false, length = 10)
     private String phone;
     @Column(nullable = false)
-    private boolean sex;
+    private Sex sex;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;

@@ -13,7 +13,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -170,5 +172,10 @@ public class UserService {
             throw new EntityNotFoundException("No Diet Plan Assigned yet");
         }
         return mapper.mapToDietPlanDTO(dietPlan);
+    }
+
+    public int calculateAge(LocalDate dateOfBirth) {
+        Period period = Period.between(dateOfBirth, LocalDate.now());
+        return period.getYears();
     }
 }

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.math.Fraction;
 
 import java.util.Set;
 
@@ -19,4 +20,5 @@ public class DietPlanDTO {
     private int kcal;
     private String comment;
     private Set<Meal> meals;
+//    private Fraction fraction;
 }

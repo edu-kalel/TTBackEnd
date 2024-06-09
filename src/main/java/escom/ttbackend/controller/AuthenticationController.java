@@ -42,7 +42,7 @@ public class AuthenticationController {
 
     /*@PostMapping("/user/register")
     @Operation(summary = "My endpoint", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<Object> register(@RequestBody RegistrationDTO registerRequest){
+    public ResponseEntity<Object> register(@DietRequestBody RegistrationDTO registerRequest){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         if (userService.isFromClinic(user.getClinic(), registerRequest.getParent_email()))
@@ -61,7 +61,7 @@ public class AuthenticationController {
      */
     /*@PutMapping("/user/update")
     @Operation(summary = "My endpoint for updating", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<Object> update(@RequestBody RegistrationDTO newRegister){
+    public ResponseEntity<Object> update(@DietRequestBody RegistrationDTO newRegister){
         System.out.println(newRegister);
         return new ResponseEntity<>(service.update(newRegister), HttpStatus.CREATED);
     }*/
