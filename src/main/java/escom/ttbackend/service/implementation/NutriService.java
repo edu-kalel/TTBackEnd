@@ -54,10 +54,6 @@ public class NutriService{
         return appointmentDTOS;
     }
 
-//    public void deleteAppointment(User nutritionist, LocalDateTime startingTime) {
-//        AppointmentId appointmentId = new AppointmentId(nutritionist, startingTime);
-//        appointmentRepository.deleteById(appointmentId);
-//    }
 
 
     public List<AppointmentDTO> getAllApointments(String email) {
@@ -129,14 +125,6 @@ public class NutriService{
         return mapper.mapToUserDTO(userRepository.save(user));
     }
 
-//    public List<PostDTO> getPostsByPatient(String email) {
-//        List<Post> posts = postRepository.findByPatient_Email(email);
-//        List<PostDTO> postDTOS = new ArrayList<>();
-//        for (Post post : posts) {
-//            postDTOS.add(mapper.mapToPostDTO(post));
-//        }
-//        return postDTOS  ;
-//    }
 
     public void confirmAppointment(Long appointmentId, User nutritionist) {
         Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new EntityNotFoundException("Appointment does not exist"));
@@ -192,15 +180,6 @@ public class NutriService{
             dietPlanRepository.save(existingDietPlan);
             return "Diet plan updated successfully";
         }
-//        var dietPlan = DietPlan.builder()
-//                .user(user)
-//                .goal(request.getGoal())
-//                .kcal(request.getKcal())
-//                .date(LocalDate.now())
-//                .comment(request.getComment())
-//                .meals(request.getMeals())
-//                .build();
-//        dietPlanRepository.save(dietPlan);
     }
 
     public CaloriesCalculationDTO addPatientRecord(PatientRecordRequest request, String nutritionist_email) {
@@ -223,24 +202,6 @@ public class NutriService{
         return calculation;
     }
 
-//    public String calculateDietPlan(String patientEmail, String nutritionistEmail) {
-//        var patient = userRepository.findById(patientEmail)
-//                .orElseThrow(() -> new UsernameNotFoundException("Patient " + patientEmail + " does not exist"));
-//        if (!userService.validateParentEmailForUser(patientEmail, nutritionistEmail))
-//            throw new BadCredentialsException("No permissions over patient " + patientEmail);
-//        int patientAge = userService.calculateAge(patient.getDate_of_birth());
-//        PatientRecord latestPatientRecord = patientRecordRepository.findFirstByPatient_EmailOrderByDateDesc(patientEmail);
-//
-//        return "perame we";
-//    }
-
-//    public ResponseEntity<String> calculatePortions(DietRequestBody request, String nutritionist_email, String patientEmail) {
-//        var patient = userRepository.findById(patientEmail)
-//                .orElseThrow(() -> new UsernameNotFoundException("Patient " + patientEmail + " does not exist"));
-//        if (!userService.validateParentEmailForUser(patientEmail, nutritionist_email))
-//            throw new BadCredentialsException("No permissions over patient " + patientEmail);
-//        return dietPlanCalculationsService.calculatePortions(request);
-//    }
 
     public DietResponseBody calculatePortions(DietRequestBody request, String nutritionistEmail, String patientEmail) throws IOException {
         log.info("enters calculate portions in nutri service");

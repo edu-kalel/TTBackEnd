@@ -1,6 +1,5 @@
 package escom.ttbackend.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import escom.ttbackend.repository.UserRepository;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
@@ -15,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @RequiredArgsConstructor

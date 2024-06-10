@@ -53,10 +53,6 @@ public class DietPlanCalculationsService {
         return (int) get;
     }
 
-//    public ResponseEntity<String> calculatePortions(DietRequestBody request){
-//        request.setT_valid("e23c24edc64b20b86335067a74e7f0c8");
-//        return calculationRequestClient.sendAndReceive(request);
-//    }
 
     public DietResponseBody getPortions(DietRequestBody request) throws IOException {
         log.info("enters get portions in dietplancalculation service");
@@ -73,7 +69,4 @@ public class DietPlanCalculationsService {
         return received;
     }
 
-//    public String jaja() throws IOException {
-//        return calculationRequestClient.aiuda();
-//    }
 }

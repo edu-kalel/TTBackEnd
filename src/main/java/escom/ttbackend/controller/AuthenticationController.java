@@ -3,20 +3,17 @@ package escom.ttbackend.controller;
 import escom.ttbackend.config.AuthenticationRequest;
 import escom.ttbackend.config.AuthenticationResponse;
 import escom.ttbackend.config.AuthenticationService;
-import escom.ttbackend.model.entities.User;
 import escom.ttbackend.presentation.dto.ClinicRegistrationDTO;
-import escom.ttbackend.presentation.dto.RegistrationDTO;
 import escom.ttbackend.service.implementation.UserService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")

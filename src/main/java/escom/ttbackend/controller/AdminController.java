@@ -6,7 +6,6 @@ import escom.ttbackend.presentation.dto.ReassignationRequest;
 import escom.ttbackend.presentation.dto.StaffRegistrationDTO;
 import escom.ttbackend.presentation.dto.UserDTO;
 import escom.ttbackend.service.implementation.AdminService;
-import escom.ttbackend.service.implementation.NutriService;
 import escom.ttbackend.service.implementation.SecretaryService;
 import escom.ttbackend.service.implementation.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

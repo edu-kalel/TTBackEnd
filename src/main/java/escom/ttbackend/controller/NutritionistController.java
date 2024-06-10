@@ -70,17 +70,6 @@ public class NutritionistController {
         return new ResponseEntity<>(nutriService.addNewDietPlan(request,user), HttpStatus.CREATED);
     }
 
-//    @PostMapping("/new-diet-plan")
-//    @Operation(summary = "Creates or updates Diet Plan for patient")
-//    public ResponseEntity<String>
-
-//    @GetMapping("/new-generated-diet-plan/{email}")
-//    @Operation(summary = "calculates and generates diet plan based on last patient record")
-//    public ResponseEntity<String> generateDietPlan(@PathVariable String email){
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        User nutritionist = (User) authentication.getPrincipal();
-//        return new ResponseEntity<>(nutriService.calculateDietPlan(email, nutritionist.getEmail()), HttpStatus.CREATED);
-//    }
 
     @PostMapping("/patient-record")
     @Operation(summary = "Adds a patient record (height, weight, comment)")
@@ -90,14 +79,6 @@ public class NutritionistController {
         return new ResponseEntity<>(nutriService.addPatientRecord(request, nutritionist.getEmail()), HttpStatus.CREATED);
     }
 
-//    @PostMapping("/calculate-portions/{patientEmail}")
-//    @Operation(summary = "Calculates diet plan based on ")
-//    public ResponseEntity<String> calculatePortions(@RequestBody DietRequestBody request, @PathVariable String patientEmail) throws IOException {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        User nutritionist = (User) authentication.getPrincipal();
-//        return (nutriService.calculatePortions(request, nutritionist.getEmail(), patientEmail));
-////        return nutriService.aversicierto();
-//    }
 
     @PostMapping("/calculate-portions/{patientEmail}")
     @Operation(summary = "Calculates portions")
@@ -147,21 +128,6 @@ public class NutritionistController {
         return new ResponseEntity<>("Appointment deleted", HttpStatus.OK);
     }
 
-//    @PutMapping("/update-appointment") //TODO check this man, still not so sure about it
-//    public ResponseEntity<AppointmentDTO> updateAppointment(@DietRequestBody AppointmentRequest appointmentRequest){
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        User nutritionist = (User) authentication.getPrincipal();
-//        AppointmentDTO appointment = userService.scheduleAppointment(appointmentRequest, nutritionist.getEmail(), AppointmentStatus.CONFIRMED);
-//        return new ResponseEntity<>(appointment, HttpStatus.OK);
-//    }
-
-//    @DeleteMapping("/appointment/{startingTime}")
-//    public ResponseEntity<String> deleteAppointment(@PathVariable LocalDateTime startingTime) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        User nutritionist = (User) authentication.getPrincipal();
-//        nutriService.deleteAppointment(nutritionist, startingTime);
-//        return new ResponseEntity<>("Appointment deleted", HttpStatus.OK);
-//    }
 
     @DeleteMapping("/patient/{email}")
     @Operation(summary = "Deletes a patient")
