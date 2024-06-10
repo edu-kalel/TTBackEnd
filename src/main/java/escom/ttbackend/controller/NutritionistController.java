@@ -5,10 +5,12 @@ import escom.ttbackend.model.enums.AppointmentStatus;
 import escom.ttbackend.presentation.dto.*;
 import escom.ttbackend.presentation.dto.calculation.CaloriesCalculationDTO;
 import escom.ttbackend.presentation.dto.calculation.DietRequestBody;
+import escom.ttbackend.presentation.dto.calculation.DietResponseBody;
 import escom.ttbackend.service.implementation.NutriService;
 import escom.ttbackend.service.implementation.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/nutri")
 @SecurityRequirement(name = "bearerAuth")
+@Slf4j
 public class NutritionistController {
     private final NutriService nutriService;
     private final UserService userService;
@@ -35,6 +38,7 @@ public class NutritionistController {
     @GetMapping("/patients")
     @Operation(summary = "Returns a list of Patients under the Nutritionist Watch")
     public ResponseEntity<List<SimpleUserDTO>> getAllPatients() {
+        log.info("enters get all patients in nutri controller");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         List<SimpleUserDTO> patients = userService.getSimpleUserDTOsByParentEmail(user.getEmail());
@@ -86,19 +90,22 @@ public class NutritionistController {
         return new ResponseEntity<>(nutriService.addPatientRecord(request, nutritionist.getEmail()), HttpStatus.CREATED);
     }
 
+//    @PostMapping("/calculate-portions/{patientEmail}")
+//    @Operation(summary = "Calculates diet plan based on ")
+//    public ResponseEntity<String> calculatePortions(@RequestBody DietRequestBody request, @PathVariable String patientEmail) throws IOException {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User nutritionist = (User) authentication.getPrincipal();
+//        return (nutriService.calculatePortions(request, nutritionist.getEmail(), patientEmail));
+////        return nutriService.aversicierto();
+//    }
+
     @PostMapping("/calculate-portions/{patientEmail}")
-    @Operation(summary = "Calculates diet plan based on ")
-    public ResponseEntity<String> calculatePortions(@RequestBody DietRequestBody request, @PathVariable String patientEmail) throws IOException {
+    @Operation(summary = "Calculates portions")
+    public ResponseEntity<DietResponseBody> calculatePortions(@RequestBody DietRequestBody request, @PathVariable String patientEmail) throws IOException {
+        log.info("enters calculate portions in nutri controller");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User nutritionist = (User) authentication.getPrincipal();
-        return (nutriService.calculatePortions(request, nutritionist.getEmail(), patientEmail));
-//        return nutriService.aversicierto();
-    }
-
-    @GetMapping("/orasisi")
-    @Operation(summary = "orasisi")
-    public ResponseEntity<String> orasisi() throws IOException {
-        return new ResponseEntity<>(nutriService.orasisi(), HttpStatus.OK);
+        return new ResponseEntity<>(nutriService.calculatePortions(request, nutritionist.getEmail(), patientEmail), HttpStatus.OK);
     }
 
     @GetMapping("/appointments")

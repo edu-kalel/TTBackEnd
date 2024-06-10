@@ -1,10 +1,13 @@
 package escom.ttbackend.presentation.dto.calculation;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class DietResponseBody {
 
     private double verduras_com;
@@ -24,9 +27,13 @@ public class DietResponseBody {
     private double grasas2_com;
     private double azucares_com;
     private double azucares2_com;
+    @JsonProperty("1")
     private double _1;
+    @JsonProperty("2")
     private double _2;
+    @JsonProperty("3")
     private double _3;
+    @JsonProperty("4")
     private double _4;
     private double valpPro;
     private double valpLip;

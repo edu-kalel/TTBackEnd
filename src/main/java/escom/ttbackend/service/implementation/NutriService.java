@@ -10,11 +10,12 @@ import escom.ttbackend.presentation.Mapper;
 import escom.ttbackend.presentation.dto.*;
 import escom.ttbackend.presentation.dto.calculation.CaloriesCalculationDTO;
 import escom.ttbackend.presentation.dto.calculation.DietRequestBody;
+import escom.ttbackend.presentation.dto.calculation.DietResponseBody;
 import escom.ttbackend.repository.*;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NutriService{
     private final UserRepository userRepository;
     private final AppointmentRepository appointmentRepository;
@@ -232,15 +234,20 @@ public class NutriService{
 //        return "perame we";
 //    }
 
-    public ResponseEntity<String> calculatePortions(DietRequestBody request, String nutritionist_email, String patientEmail) {
+//    public ResponseEntity<String> calculatePortions(DietRequestBody request, String nutritionist_email, String patientEmail) {
+//        var patient = userRepository.findById(patientEmail)
+//                .orElseThrow(() -> new UsernameNotFoundException("Patient " + patientEmail + " does not exist"));
+//        if (!userService.validateParentEmailForUser(patientEmail, nutritionist_email))
+//            throw new BadCredentialsException("No permissions over patient " + patientEmail);
+//        return dietPlanCalculationsService.calculatePortions(request);
+//    }
+
+    public DietResponseBody calculatePortions(DietRequestBody request, String nutritionistEmail, String patientEmail) throws IOException {
+        log.info("enters calculate portions in nutri service");
         var patient = userRepository.findById(patientEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("Patient " + patientEmail + " does not exist"));
-        if (!userService.validateParentEmailForUser(patientEmail, nutritionist_email))
+        if (!userService.validateParentEmailForUser(patientEmail, nutritionistEmail))
             throw new BadCredentialsException("No permissions over patient " + patientEmail);
-        return dietPlanCalculationsService.calculatePortions(request);
-    }
-
-    public String orasisi() throws IOException {
-        return dietPlanCalculationsService.orasisi();
+        return dietPlanCalculationsService.getPortions(request);
     }
 }

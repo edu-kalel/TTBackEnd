@@ -5,14 +5,16 @@ import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.ActivityLevel;
 import escom.ttbackend.model.enums.Sex;
 import escom.ttbackend.presentation.dto.calculation.DietRequestBody;
+import escom.ttbackend.presentation.dto.calculation.DietResponseBody;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DietPlanCalculationsService {
 
     private final CalculationRequestClient calculationRequestClient;
@@ -51,16 +53,27 @@ public class DietPlanCalculationsService {
         return (int) get;
     }
 
-    public ResponseEntity<String> calculatePortions(DietRequestBody request){
-        request.setT_valid("e23c24edc64b20b86335067a74e7f0c8");
-        return calculationRequestClient.sendAndReceive(request);
+//    public ResponseEntity<String> calculatePortions(DietRequestBody request){
+//        request.setT_valid("e23c24edc64b20b86335067a74e7f0c8");
+//        return calculationRequestClient.sendAndReceive(request);
+//    }
+
+    public DietResponseBody getPortions(DietRequestBody request) throws IOException {
+        log.info("enters get portions in dietplancalculation service");
+        DietResponseBody received = calculationRequestClient.sendAndReceive(request);
+        if (received.getLeche2_com()>received.getLeche1_com()) {
+            received.setLeche1_com(received.getLeche1_com() + received.getLeche2_com() + 0.5);
+            received.setLeche2_com(0);
+        }
+        if (received.getLeche4_com()>received.getLeche3_com()) {
+            received.setLeche3_com(received.getLeche3_com() + received.getLeche4_com());
+            received.setLeche4_com(0);
+        }
+        log.info("Modified -> {}", received);
+        return received;
     }
 
-    public String orasisi() throws IOException {
-        return calculationRequestClient.disisit();
-    }
-
-    public String jaja() throws IOException {
-        return calculationRequestClient.aiuda();
-    }
+//    public String jaja() throws IOException {
+//        return calculationRequestClient.aiuda();
+//    }
 }
