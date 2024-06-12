@@ -14,6 +14,6 @@ public class PatientRecordRequest {
     private String patientEmail;
     private int patientHeight;
     private int patientWeight;
-    private String comment;
+//    private String comment;
     private ActivityLevel activityLevel;
 }

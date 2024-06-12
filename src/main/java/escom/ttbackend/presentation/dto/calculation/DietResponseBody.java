@@ -10,42 +10,71 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DietResponseBody {
 
-    private double verduras_com;
-    private double frutas_com;
-    private double cereales_com;
-    private double cerealesGrasa_com;
-    private double leguminosas_com;
-    private double aoa1_com;
-    private double aoa2_com;
-    private double aoa3_com;
-    private double aoa4_com;
-    private double leche1_com;
-    private double leche2_com;
-    private double leche3_com;
-    private double leche4_com;
-    private double grasas_com;
-    private double grasas2_com;
-    private double azucares_com;
-    private double azucares2_com;
+    @JsonProperty("verduras_com")
+    private double verduras;
+    @JsonProperty("frutas_com")
+    private double frutas;
+    @JsonProperty("cereales_com")
+    private double cereales;
+    @JsonProperty("cerealesGrasa_com")
+    private double cerealesConGrasa;
+    @JsonProperty("leguminosas_com")
+    private double leguminosas;
+    @JsonProperty("aoa1_com")
+    private double alimentosDeOrigenAnimalMuyBajosEnGrasa;
+    @JsonProperty("aoa2_com")
+    private double alimentosDeOrigenAnimalBajosEnGrasa;
+    @JsonProperty("aoa3_com")
+    private double alimentosDeOrigenAnimalModeradosEnGrasa;
+    @JsonProperty("aoa4_com")
+    private double alimentosDeOrigenAnimalAltoContenidoDeGrasa;
+    @JsonProperty("leche1_com")
+    private double lecheDescremada;
+    @JsonProperty("leche2_com")
+    private double lecheSemiDescremada;
+    @JsonProperty("leche3_com")
+    private double LecheEntera;
+    @JsonProperty("leche4_com")
+    private double lecheCA;
+    @JsonProperty("grasas_com")
+    private double grasas;
+    @JsonProperty("grasas2_com")
+    private double grasasConProteína;
+    @JsonProperty("azucares_com")
+    private double azucares;
+    @JsonProperty("azucares2_com")
+    private double azucaresConGrasa;
     @JsonProperty("1")
-    private double _1;
+    private double sumaKcal;
     @JsonProperty("2")
-    private double _2;
+    private double sumaProteinas;
     @JsonProperty("3")
-    private double _3;
+    private double sumaLipidos;
     @JsonProperty("4")
-    private double _4;
-    private double valpPro;
-    private double valpLip;
-    private double valpHco;
+    private double sumaCarbohidratos;
+    @JsonProperty("valpPro")
+    private double kcalProporcionadasPorProteinas;
+    @JsonProperty("valpLip")
+    private double kcalProporcionadasPorLipidos;
+    @JsonProperty("valpHco")
+    private double kcalProporcionadasPorCarbohidratos;
+    @JsonProperty("rgKcal")
     private double rgKcal;
+    @JsonProperty("rgPro")
     private String rgPro;
+    @JsonProperty("rgLip")
     private String rgLip;
+    @JsonProperty("rgHco")
     private String rgHco;
+    @JsonProperty("porKcal")
     private String porKcal;
+    @JsonProperty("porPro")
     private String porPro;
+    @JsonProperty("porLip")
     private String porLip;
+    @JsonProperty("porHco")
     private String porHco;
+    @JsonProperty("porcentajeHcosimples")
     private String porcentajeHcosimples;
 
     // Getters and Setters

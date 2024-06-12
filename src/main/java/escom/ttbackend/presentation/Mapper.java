@@ -2,6 +2,8 @@ package escom.ttbackend.presentation;
 
 import escom.ttbackend.model.entities.*;
 import escom.ttbackend.presentation.dto.*;
+import escom.ttbackend.presentation.dto.calculation.DietResponseBody;
+import escom.ttbackend.presentation.dto.calculation.PortionsDTO;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -67,8 +69,7 @@ public class Mapper {
         return new PatientRecordResponse(
                 patientRecord.getIdPatientRecord(),
                 patientRecord.getPatientHeight(),
-                patientRecord.getPatientWeight(),
-                patientRecord.getComment()
+                patientRecord.getPatientWeight()
         );
     }
 
@@ -79,6 +80,31 @@ public class Mapper {
                 patient_fullname,
                 appointment.getStartingTime()
         );
+    }
+
+    public PortionsDTO mapToPortionsDTO(DietResponseBody received) {
+        return new PortionsDTO(
+                received.getVerduras(),
+                received.getFrutas(),
+                received.getCereales(),
+                received.getCerealesConGrasa(),
+                received.getLeguminosas(),
+                received.getAlimentosDeOrigenAnimalMuyBajosEnGrasa(),
+                received.getAlimentosDeOrigenAnimalBajosEnGrasa(),
+                received.getAlimentosDeOrigenAnimalModeradosEnGrasa(),
+                received.getAlimentosDeOrigenAnimalAltoContenidoDeGrasa(),
+                received.getLecheDescremada(),
+                received.getLecheEntera(),
+                received.getGrasas(),
+                received.getGrasasConProteína(),
+                received.getAzucares(),
+                received.getAzucaresConGrasa(),
+                received.getSumaKcal(),
+                received.getSumaProteinas(),
+                received.getSumaLipidos(),
+                received.getSumaCarbohidratos()
+        );
+
     }
 //    public User mapToNutritionist(RegistrationDTO registrationDTO){
 //        User secretary = userService.getByEmail(registrationDTO.getParent_email());

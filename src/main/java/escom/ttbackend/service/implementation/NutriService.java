@@ -10,7 +10,7 @@ import escom.ttbackend.presentation.Mapper;
 import escom.ttbackend.presentation.dto.*;
 import escom.ttbackend.presentation.dto.calculation.CaloriesCalculationDTO;
 import escom.ttbackend.presentation.dto.calculation.DietRequestBody;
-import escom.ttbackend.presentation.dto.calculation.DietResponseBody;
+import escom.ttbackend.presentation.dto.calculation.PortionsDTO;
 import escom.ttbackend.repository.*;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -45,11 +45,11 @@ public class NutriService{
     private final DietPlanCalculationsService dietPlanCalculationsService;
 
 
-    public List<AppointmentDTO> getAppointmentsByStatus(String email, AppointmentStatus status) {
+    public List<SimpleAppointmentDTO> getAppointmentsByStatus(String email, AppointmentStatus status) {
         List<Appointment> appointments = appointmentRepository.findByNutritionist_EmailAndAppointmentStatus(email, status);
-        List<AppointmentDTO> appointmentDTOS = new ArrayList<>();
+        List<SimpleAppointmentDTO> appointmentDTOS = new ArrayList<>();
         for (Appointment appointment : appointments) {
-            appointmentDTOS.add(mapper.mapToAppointmentDTO(appointment));
+            appointmentDTOS.add(mapper.mapToSimpleAppointmentDTO(appointment));
         }
         return appointmentDTOS;
     }
@@ -64,7 +64,7 @@ public class NutriService{
         }
         return appointmentDTOS  ;
     }
-    public UserDTO registerNewPatient(PatientRegistrationByNutritionistDTO request, User parentUser) {
+    public void registerNewPatient(PatientRegistrationByNutritionistDTO request, User parentUser) {
         if (userRepository.existsById(request.getEmail())){
             throw new EntityExistsException("User Already Exists");
         }
@@ -82,11 +82,12 @@ public class NutriService{
                     .ailments(request.getAilments())
                     .clinic(parentUser.getClinic())
                     .build();
-            return mapper.mapToUserDTO(userRepository.save(user));
+            userRepository.save(user);
+//            return mapper.mapToUserDTO(userRepository.save(user));
         }
     }
 
-    public UserDTO updatePatient(PatientRegistrationByNutritionistDTO request) {    //TODO maybe refactor this, like -> adminService -> updateUser
+    public void updatePatient(PatientRegistrationByNutritionistDTO request) {    //TODO maybe refactor this, like -> adminService -> updateUser
         var user = userRepository.findById(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
 
@@ -121,8 +122,8 @@ public class NutriService{
                     .clinic(user.getClinic())
                     .build();
         }
-
-        return mapper.mapToUserDTO(userRepository.save(user));
+        userRepository.save(user);
+//        mapper.mapToUserDTO(userRepository.save(user));
     }
 
 
@@ -191,7 +192,6 @@ public class NutriService{
                 .patient(patient)
                 .patientHeight(request.getPatientHeight())
                 .patientWeight(request.getPatientWeight())
-                .comment(request.getComment())
                 .date(LocalDate.now())
                 .build();
         patientRecordRepository.save(patientRecord);
@@ -203,7 +203,7 @@ public class NutriService{
     }
 
 
-    public DietResponseBody calculatePortions(DietRequestBody request, String nutritionistEmail, String patientEmail) throws IOException {
+    public PortionsDTO calculatePortions(DietRequestBody request, String nutritionistEmail, String patientEmail) throws IOException {
         log.info("enters calculate portions in nutri service");
         var patient = userRepository.findById(patientEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("Patient " + patientEmail + " does not exist"));

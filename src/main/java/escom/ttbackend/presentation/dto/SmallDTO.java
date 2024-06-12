@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PatientRecordResponse {
-    private Long id;
-    private int patientHeight;
-    private int patientWeight;
+public class SmallDTO{
+    private Double quantity;
+    private Long id_food;
 }

@@ -34,7 +34,8 @@ public class AuthenticationController {
      */
     @PostMapping("/new-clinic/register")
     public ResponseEntity<Object> registerNewClinic(@RequestBody ClinicRegistrationDTO registerRequest){
-        return new ResponseEntity<>(service.registerNewClinic(registerRequest), HttpStatus.CREATED);
+        service.registerNewClinic(registerRequest);
+        return new ResponseEntity<>("Registro exitoso, regresa e inicia sesión con tus credenciales", HttpStatus.CREATED);
     }
 
     /*@PostMapping("/user/register")

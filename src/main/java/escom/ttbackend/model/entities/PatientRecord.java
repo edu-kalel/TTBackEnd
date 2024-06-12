@@ -26,7 +26,7 @@ public class PatientRecord {
     private int patientHeight;
     @Column(nullable = false, updatable = false, name = "patient_weight")
     private int patientWeight;
-    private String comment;
+//    private String comment;
     @Column(nullable = false, updatable = false)
     private LocalDate date;
 }

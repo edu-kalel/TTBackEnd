@@ -4,8 +4,10 @@ import escom.ttbackend.model.entities.PatientRecord;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.ActivityLevel;
 import escom.ttbackend.model.enums.Sex;
+import escom.ttbackend.presentation.Mapper;
 import escom.ttbackend.presentation.dto.calculation.DietRequestBody;
 import escom.ttbackend.presentation.dto.calculation.DietResponseBody;
+import escom.ttbackend.presentation.dto.calculation.PortionsDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import java.io.IOException;
 public class DietPlanCalculationsService {
 
     private final CalculationRequestClient calculationRequestClient;
+    private final Mapper mapper;
 
     public int calculateGER(User patient, PatientRecord patientRecord, int patientAge){
         if (patient.getSex().equals(Sex.MASC)){
@@ -54,19 +57,20 @@ public class DietPlanCalculationsService {
     }
 
 
-    public DietResponseBody getPortions(DietRequestBody request) throws IOException {
+    public PortionsDTO getPortions(DietRequestBody request) throws IOException {
         log.info("enters get portions in dietplancalculation service");
         DietResponseBody received = calculationRequestClient.sendAndReceive(request);
-        if (received.getLeche2_com()>received.getLeche1_com()) {
-            received.setLeche1_com(received.getLeche1_com() + received.getLeche2_com() + 0.5);
-            received.setLeche2_com(0);
+        if (received.getLecheSemiDescremada()>received.getLecheDescremada()) {
+            received.setLecheDescremada(received.getLecheDescremada() + received.getLecheSemiDescremada());
+            received.setLecheSemiDescremada(0);
         }
-        if (received.getLeche4_com()>received.getLeche3_com()) {
-            received.setLeche3_com(received.getLeche3_com() + received.getLeche4_com());
-            received.setLeche4_com(0);
+        if (received.getLecheCA()>received.getLecheEntera()) {
+            received.setLecheEntera(received.getLecheEntera() + received.getLecheCA());
+            received.setLecheCA(0);
         }
-        log.info("Modified -> {}", received);
-        return received;
+        PortionsDTO portionsDTO = mapper.mapToPortionsDTO(received);
+        log.info("Modified -> {}", portionsDTO);
+        return portionsDTO;
     }
 
 }

@@ -24,7 +24,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final Mapper mapper;
-    public UserDTO registerNewClinic(ClinicRegistrationDTO request) {
+    public void registerNewClinic(ClinicRegistrationDTO request) {
         if (userRepository.existsById(request.getEmail())){
             throw new EntityExistsException("User Already Exists");
         }
@@ -42,7 +42,7 @@ public class AuthenticationService {
                 .sex(request.getSex())
                 .clinic(request.getClinic())
                 .build();
-        return mapper.mapToUserDTO(userRepository.save(user));
+        mapper.mapToUserDTO(userRepository.save(user));
     }
     public UserDTO register(RegistrationDTO request, String clinic) {
         if (userRepository.existsById(request.getEmail())){
