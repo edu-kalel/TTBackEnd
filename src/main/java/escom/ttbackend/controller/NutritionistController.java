@@ -5,7 +5,6 @@ import escom.ttbackend.model.enums.AppointmentStatus;
 import escom.ttbackend.presentation.dto.*;
 import escom.ttbackend.presentation.dto.calculation.CaloriesCalculationDTO;
 import escom.ttbackend.presentation.dto.calculation.DietRequestBody;
-import escom.ttbackend.presentation.dto.calculation.DietResponseBody;
 import escom.ttbackend.presentation.dto.calculation.PortionsDTO;
 import escom.ttbackend.service.implementation.NutriService;
 import escom.ttbackend.service.implementation.UserService;
@@ -215,5 +214,14 @@ public class NutritionistController {
         List<SimpleAppointmentDTO> appointments = nutriService.getTodayConfirmedAppointments(user.getEmail());
         return new ResponseEntity<>(appointments, HttpStatus.OK);
     }
+
+    @GetMapping("/patient/big-info/{patientEmail}")
+    @Operation(summary = "big info to be displayed in patients individual view")
+    public ResponseEntity<BigPatientInfoDTO> getBigInfo(@PathVariable String patientEmail){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User nutritionist = (User) authentication.getPrincipal();
+        return new ResponseEntity<>(nutriService.getBigInfo(patientEmail, nutritionist.getEmail()), HttpStatus.OK);
+    }
+
 
 }

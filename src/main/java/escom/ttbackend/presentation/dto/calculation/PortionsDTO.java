@@ -1,6 +1,5 @@
 package escom.ttbackend.presentation.dto.calculation;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +22,7 @@ public class PortionsDTO {
     private double lecheDescremada;
     private double LecheEntera;
     private double grasas;
-    private double grasasConProteína;
+    private double grasasConProteina;
     private double azucares;
     private double azucaresConGrasa;
     private double sumaKcal;

@@ -211,4 +211,13 @@ public class NutriService{
             throw new BadCredentialsException("No permissions over patient " + patientEmail);
         return dietPlanCalculationsService.getPortions(request);
     }
+
+    public BigPatientInfoDTO getBigInfo(String patientEmail, String nutritionistEmail) {
+        var patient = userRepository.findById(patientEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("El paciente con email " + patientEmail + " no existe"));
+        if (!userService.validateParentEmailForUser(patientEmail, nutritionistEmail))
+            throw new BadCredentialsException("No permisos sobre el paciente: " + patientEmail);
+        int age = userService.calculateAge(patient.getDate_of_birth());
+        return mapper.mapToBigPatientInfoDTO(patient, age);
+    }
 }

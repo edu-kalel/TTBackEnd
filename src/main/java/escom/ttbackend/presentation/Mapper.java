@@ -4,10 +4,15 @@ import escom.ttbackend.model.entities.*;
 import escom.ttbackend.presentation.dto.*;
 import escom.ttbackend.presentation.dto.calculation.DietResponseBody;
 import escom.ttbackend.presentation.dto.calculation.PortionsDTO;
+import escom.ttbackend.repository.PatientRecordRepository;
+import escom.ttbackend.service.implementation.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class Mapper {
+    private final PatientRecordRepository patientRecordRepository;
 
     public UserDTO mapToUserDTO(User user){
         String parent_email;
@@ -96,7 +101,7 @@ public class Mapper {
                 received.getLecheDescremada(),
                 received.getLecheEntera(),
                 received.getGrasas(),
-                received.getGrasasConProteína(),
+                received.getGrasasConProteina(),
                 received.getAzucares(),
                 received.getAzucaresConGrasa(),
                 received.getSumaKcal(),
@@ -106,14 +111,14 @@ public class Mapper {
         );
 
     }
-//    public User mapToNutritionist(RegistrationDTO registrationDTO){
-//        User secretary = userService.getByEmail(registrationDTO.getParent_email());
-//        var user = User.builder()
-//                .email(registrationDTO.getEmail())
-//                .first_name(registrationDTO.getFirst_name())
-//                .last_name(registrationDTO.getLast_name())
-//                .date_of_birth(registrationDTO.getDate_of_birth())
-//                .phone(registrationDTO.getPhone())
-//                .
-//    }
+
+    public BigPatientInfoDTO mapToBigPatientInfoDTO(User patient, int age) {
+        PatientRecord patientRecord = patientRecordRepository.findFirstByPatient_EmailOrderByDateDesc(patient.getEmail());
+        return new BigPatientInfoDTO(
+                patient.getFirst_name() + " " + patient.getLast_name(),
+                age,
+                patientRecord.getPatientWeight(),
+                patientRecord.getPatientHeight()
+        );
+    }
 }

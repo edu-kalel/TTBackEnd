@@ -39,7 +39,7 @@ public class DietResponseBody {
     @JsonProperty("grasas_com")
     private double grasas;
     @JsonProperty("grasas2_com")
-    private double grasasConProteína;
+    private double grasasConProteina;
     @JsonProperty("azucares_com")
     private double azucares;
     @JsonProperty("azucares2_com")
