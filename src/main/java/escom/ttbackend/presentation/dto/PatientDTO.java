@@ -1,7 +1,9 @@
 package escom.ttbackend.presentation.dto;
 
+import escom.ttbackend.model.enums.Ailment;
 import escom.ttbackend.model.enums.Role;
 import escom.ttbackend.model.enums.Sex;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -19,4 +21,5 @@ public class PatientDTO {
     private Sex sex;
     private Role role;
     private String parent_email;
+    private Set<Ailment> ailments;
 }

@@ -1,13 +1,11 @@
 package escom.ttbackend.model.entities;
 
-import escom.ttbackend.model.converter.FractionConverter;
-import escom.ttbackend.model.enums.Goal;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.math.Fraction;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -22,8 +20,8 @@ import java.util.Set;
 public class DietPlan implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, updatable = false)
-    private Long id_diet_plan;
+    @Column(nullable = false, updatable = false, name = "id_diet_plan")
+    private Long idDietPlan;
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "email", nullable = false)
     private User user;
@@ -35,14 +33,9 @@ public class DietPlan implements Serializable {
     @Column(nullable = false)
     private LocalDate date;
     private String comment;
-    @ElementCollection
-    @CollectionTable(
-            name="meal",
-            joinColumns = @JoinColumn(name = "diet_plan")
-    )
+    @OneToMany(mappedBy = "dietPlan", fetch = FetchType.LAZY)
+    @JsonBackReference
     private Set<Meal> meals;
-    @Convert(converter = FractionConverter.class)
-    private Fraction fraction;
 }
 
 

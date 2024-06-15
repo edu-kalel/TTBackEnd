@@ -45,50 +45,6 @@ public class NutritionistController {
         return new ResponseEntity<>(patients, HttpStatus.OK);
     }
 
-    @PostMapping("/appointment")
-    @Operation(summary = "Schedule an Appointment")
-    public ResponseEntity<AppointmentDTO> addAppointment(@RequestBody AppointmentRequest appointmentRequest) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        AppointmentDTO appointment = userService.scheduleAppointment(appointmentRequest, user.getEmail(), AppointmentStatus.CONFIRMED);
-        return new ResponseEntity<>(appointment, HttpStatus.OK);
-    }
-
-    @PostMapping("/new-patient")
-    @Operation(summary = "Add New Patient")
-    public ResponseEntity<String> registerNewPatient(@RequestBody PatientRegistrationByNutritionistDTO registerRequest){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        nutriService.registerNewPatient(registerRequest,user);          //TODO check, is this ok? passing the user i mean, theres a reason why i only pass the email
-        return new ResponseEntity<>("Paciente Creado Correctamente", HttpStatus.CREATED);
-    }
-
-    @PostMapping("/diet-plan")
-    @Operation(summary = "Creates or updates Diet Plan for patient")
-    public ResponseEntity<String> newDietPlan(@RequestBody DietPlanDTO request){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        return new ResponseEntity<>(nutriService.addNewDietPlan(request,user), HttpStatus.CREATED);
-    }
-
-
-    @PostMapping("/patient-record")
-    @Operation(summary = "Adds a patient record (height, weight, comment)")
-    public ResponseEntity<CaloriesCalculationDTO> newPatientRecord(@RequestBody PatientRecordRequest request){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User nutritionist = (User) authentication.getPrincipal();
-        return new ResponseEntity<>(nutriService.addPatientRecord(request, nutritionist.getEmail()), HttpStatus.CREATED);
-    }
-
-
-    @PostMapping("/calculate-portions/{patientEmail}")
-    @Operation(summary = "Calculates portions")
-    public ResponseEntity<PortionsDTO> calculatePortions(@RequestBody DietRequestBody request, @PathVariable String patientEmail) throws IOException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User nutritionist = (User) authentication.getPrincipal();
-        return new ResponseEntity<>(nutriService.calculatePortions(request, nutritionist.getEmail(), patientEmail), HttpStatus.OK);
-    }
-
     @GetMapping("/appointments")
     @Operation(summary = "Returns a list of all appointments for nutritionist (Confirmed or not)")
     public ResponseEntity<List<AppointmentDTO>> getAllAppointments() {
@@ -96,53 +52,6 @@ public class NutritionistController {
         User user = (User) authentication.getPrincipal();
         List<AppointmentDTO> appointments = nutriService.getAllApointments(user.getEmail());
         return new ResponseEntity<>(appointments, HttpStatus.OK);
-    }
-
-    @PutMapping("/patient/update")
-    @Operation(summary = "Updates Patient Info")
-    public ResponseEntity<Object> updatePatient(@RequestBody PatientRegistrationByNutritionistDTO registrationDTO){
-        if (!userService.existsById(registrationDTO.getEmail()))
-            throw new UsernameNotFoundException("El paciente no existe");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        if (userService.validateParentEmailForUser(registrationDTO.getEmail(), user.getEmail())) {
-            nutriService.updatePatient(registrationDTO);
-            return new ResponseEntity<>("Actualizado con éxito", HttpStatus.CREATED);
-        }
-        else throw new BadCredentialsException("No tienes permisos sobre este usuario");
-    }
-
-    @PutMapping("/appointment/confirm/{appointmentId}")
-    @Operation(summary = "Confirms a solicited appointment by patient")
-    public ResponseEntity<String> confirmAppointment(@PathVariable Long appointmentId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User nutritionist = (User) authentication.getPrincipal();
-        nutriService.confirmAppointment(appointmentId, nutritionist);
-        return new ResponseEntity<>("Cita confirmada", HttpStatus.OK);
-    }
-
-    @DeleteMapping("/appointment/delete/{appointmentId}")
-    @Operation(summary = "Cancels and deletes an appointment")
-    public ResponseEntity<String> deleteAppointment(@PathVariable Long appointmentId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User nutritionist = (User) authentication.getPrincipal();
-        nutriService.deleteAppointment(appointmentId, nutritionist);
-        return new ResponseEntity<>("Cita eliminada", HttpStatus.OK);
-    }
-
-
-    @DeleteMapping("/patient/{email}")
-    @Operation(summary = "Deletes a patient")
-    public ResponseEntity<String> deletePatient(@PathVariable String email){
-        if (!userService.existsById(email))
-            throw new UsernameNotFoundException("El paciente no existe");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        if (userService.validateParentEmailForUser(email, user.getEmail())){
-            userService.deletePatient(email);
-            return new ResponseEntity<>("Paciente Eliminado", HttpStatus.OK);
-        }
-        else throw new BadCredentialsException("No tienes permisos sobre este usuario");
     }
 
     @GetMapping("/my-info")
@@ -155,11 +64,11 @@ public class NutritionistController {
 
     @GetMapping("/patient/info/{email}")
     @Operation(summary = "Single patient info")
-    public ResponseEntity<UserDTO> getPatient(@PathVariable String email){
+    public ResponseEntity<PatientDTO> getPatient(@PathVariable String email){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User nutri = (User) authentication.getPrincipal();
         if (userService.validateParentEmailForUser(email, nutri.getEmail())){
-            return new ResponseEntity<>(userService.getUserDTObyID(email), HttpStatus.OK);
+            return new ResponseEntity<>(userService.getPatientDTObyID(email), HttpStatus.OK);
         }
         else throw new BadCredentialsException("No tienes permisos sobre este usuario");
     }
@@ -222,6 +131,96 @@ public class NutritionistController {
         User nutritionist = (User) authentication.getPrincipal();
         return new ResponseEntity<>(nutriService.getBigInfo(patientEmail, nutritionist.getEmail()), HttpStatus.OK);
     }
+
+    @PostMapping("/appointment")
+    @Operation(summary = "Schedule an Appointment")
+    public ResponseEntity<AppointmentDTO> addAppointment(@RequestBody AppointmentRequest appointmentRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        AppointmentDTO appointment = userService.scheduleAppointment(appointmentRequest, user.getEmail(), AppointmentStatus.CONFIRMED);
+        return new ResponseEntity<>(appointment, HttpStatus.OK);
+    }
+
+    @PostMapping("/new-patient")
+    @Operation(summary = "Add New Patient")
+    public ResponseEntity<String> registerNewPatient(@RequestBody PatientRegistrationByNutritionistDTO registerRequest){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        nutriService.registerNewPatient(registerRequest,user);          //TODO check, is this ok? passing the user i mean, theres a reason why i only pass the email
+        return new ResponseEntity<>("Paciente Creado Correctamente", HttpStatus.CREATED);
+    }
+
+//    @PostMapping("/diet-plan")
+//    @Operation(summary = "Creates or updates Diet Plan for patient")
+//    public ResponseEntity<String> newDietPlan(@RequestBody DietPlanDTO request){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User user = (User) authentication.getPrincipal();
+//        return new ResponseEntity<>(nutriService.addNewDietPlan(request,user), HttpStatus.CREATED);
+//    }
+
+
+    @PostMapping("/patient-record")
+    @Operation(summary = "Adds a patient record (height, weight, comment)")
+    public ResponseEntity<CaloriesCalculationDTO> newPatientRecord(@RequestBody PatientRecordRequest request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User nutritionist = (User) authentication.getPrincipal();
+        return new ResponseEntity<>(nutriService.addPatientRecord(request, nutritionist.getEmail()), HttpStatus.CREATED);
+    }
+
+
+    @PostMapping("/calculate-portions/{patientEmail}")
+    @Operation(summary = "Calculates portions")
+    public ResponseEntity<PortionsDTO> calculatePortions(@RequestBody DietRequestBody request, @PathVariable String patientEmail) throws IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User nutritionist = (User) authentication.getPrincipal();
+        return new ResponseEntity<>(nutriService.calculatePortions(request, nutritionist.getEmail(), patientEmail), HttpStatus.OK);
+    }
+
+
+
+    @PutMapping("/patient/update")
+    @Operation(summary = "Updates Patient Info")
+    public ResponseEntity<String> updatePatient(@RequestBody PatientRegistrationByNutritionistDTO registrationDTO){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User nutritionist = (User) authentication.getPrincipal();
+        nutriService.updatePatient(registrationDTO, nutritionist.getEmail());
+        return new ResponseEntity<>("Actualizado con éxito", HttpStatus.CREATED);
+    }
+
+    @PutMapping("/appointment/confirm/{appointmentId}")
+    @Operation(summary = "Confirms a solicited appointment by patient")
+    public ResponseEntity<String> confirmAppointment(@PathVariable Long appointmentId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User nutritionist = (User) authentication.getPrincipal();
+        nutriService.confirmAppointment(appointmentId, nutritionist);
+        return new ResponseEntity<>("Cita confirmada", HttpStatus.OK);
+    }
+
+    @DeleteMapping("/appointment/delete/{appointmentId}")
+    @Operation(summary = "Cancels and deletes an appointment")
+    public ResponseEntity<String> deleteAppointment(@PathVariable Long appointmentId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User nutritionist = (User) authentication.getPrincipal();
+        nutriService.deleteAppointment(appointmentId, nutritionist);
+        return new ResponseEntity<>("Cita eliminada", HttpStatus.OK);
+    }
+
+
+    @DeleteMapping("/patient/{email}")
+    @Operation(summary = "Deletes a patient")
+    public ResponseEntity<String> deletePatient(@PathVariable String email){
+        if (!userService.existsById(email))
+            throw new UsernameNotFoundException("El paciente no existe");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        if (userService.validateParentEmailForUser(email, user.getEmail())){
+            userService.deletePatient(email);
+            return new ResponseEntity<>("Paciente Eliminado", HttpStatus.OK);
+        }
+        else throw new BadCredentialsException("No tienes permisos sobre este usuario");
+    }
+
+
 
 
 }

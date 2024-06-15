@@ -57,10 +57,10 @@ public class PatientController {
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
-    @GetMapping("/diet-plan")
-    public ResponseEntity<DietPlanDTO> getLatestDietPlan(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User patient = (User) authentication.getPrincipal();
-        return new ResponseEntity<>(userService.getLatestDietPlan(patient.getEmail()), HttpStatus.OK);
-    }
+//    @GetMapping("/diet-plan")
+//    public ResponseEntity<DietPlanDTO> getLatestDietPlan(){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User patient = (User) authentication.getPrincipal();
+//        return new ResponseEntity<>(userService.getLatestDietPlan(patient.getEmail()), HttpStatus.OK);
+//    }
 }

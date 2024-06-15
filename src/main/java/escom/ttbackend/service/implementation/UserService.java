@@ -159,23 +159,28 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public DietPlanDTO getLatestDietPlan(String patientEmail) {
-        // Implement logic to retrieve the latest DietPlan for the patient
-        DietPlan latestDietPlan = dietPlanRepository.findFirstByUser_EmailOrderByDateDesc(patientEmail);
-        // Convert DietPlan to DietPlanDTO if necessary
-        return mapper.mapToDietPlanDTO(latestDietPlan);
-    }
+//    public DietPlanDTO getLatestDietPlan(String patientEmail) {
+//        // Implement logic to retrieve the latest DietPlan for the patient
+//        DietPlan latestDietPlan = dietPlanRepository.findFirstByUser_EmailOrderByDateDesc(patientEmail);
+//        // Convert DietPlan to DietPlanDTO if necessary
+//        return mapper.mapToDietPlanDTO(latestDietPlan);
+//    }
 
-    public DietPlanDTO getDietPlan(String email) {
-        DietPlan dietPlan = dietPlanRepository.findByUser_Email(email);
-        if (dietPlan == null) {
-            throw new EntityNotFoundException("No Diet Plan Assigned yet");
-        }
-        return mapper.mapToDietPlanDTO(dietPlan);
-    }
+//    public DietPlanDTO getDietPlan(String email) {
+//        DietPlan dietPlan = dietPlanRepository.findByUser_Email(email);
+//        if (dietPlan == null) {
+//            throw new EntityNotFoundException("No Diet Plan Assigned yet");
+//        }
+//        return mapper.mapToDietPlanDTO(dietPlan);
+//    }
 
     public int calculateAge(LocalDate dateOfBirth) {
         Period period = Period.between(dateOfBirth, LocalDate.now());
         return period.getYears();
+    }
+
+    public PatientDTO getPatientDTObyID(String email) {
+        return mapper.mapToPatientDTO(userRepository.findById(email)
+          .orElseThrow(() -> new UsernameNotFoundException("User does not exist")));
     }
 }

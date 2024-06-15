@@ -71,7 +71,7 @@ public class AdminController {
         User secretary = (User) authentication.getPrincipal();
         for (PatientRegistrationBySecretaryDTO patientRegistrationDTO : registerRequest){
             if (userService.validateParentEmailForUser(patientRegistrationDTO.getParent_email(), secretary.getEmail()))
-                secretaryService.registerNewPatient(patientRegistrationDTO);
+                secretaryService.registerNewPatient(patientRegistrationDTO, secretary.getEmail());
             else throw new BadCredentialsException("No permissions over this user");
         }
         return new ResponseEntity<>("idk man, maybe it's ok", HttpStatus.CREATED);

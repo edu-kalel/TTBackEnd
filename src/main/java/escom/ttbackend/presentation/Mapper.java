@@ -5,7 +5,6 @@ import escom.ttbackend.presentation.dto.*;
 import escom.ttbackend.presentation.dto.calculation.DietResponseBody;
 import escom.ttbackend.presentation.dto.calculation.PortionsDTO;
 import escom.ttbackend.repository.PatientRecordRepository;
-import escom.ttbackend.service.implementation.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +34,7 @@ public class Mapper {
 
     public AppointmentDTO mapToAppointmentDTO(Appointment appointment){
         return new AppointmentDTO(
-                appointment.getId_appointment(),
+                appointment.getIdAppointment(),
                 appointment.getNutritionist().getEmail(),
                 appointment.getStartingTime(),
                 appointment.getPatient().getEmail(),
@@ -60,15 +59,15 @@ public class Mapper {
         );
     }
 
-    public DietPlanDTO mapToDietPlanDTO(DietPlan latestDietPlan) {
-        return new DietPlanDTO(
-                latestDietPlan.getUser().getEmail(),
-                latestDietPlan.getGoal(),
-                latestDietPlan.getKcal(),
-                latestDietPlan.getComment(),
-                latestDietPlan.getMeals()
-        );
-    }
+//    public DietPlanDTO mapToDietPlanDTO(DietPlan latestDietPlan) {
+//        return new DietPlanDTO(
+//                latestDietPlan.getUser().getEmail(),
+//                latestDietPlan.getGoal(),
+//                latestDietPlan.getKcal(),
+//                latestDietPlan.getComment(),
+//                latestDietPlan.getMeals()
+//        );
+//    }
 
     public PatientRecordResponse mapToPatientRecordDTO(PatientRecord patientRecord) {
         return new PatientRecordResponse(
@@ -81,7 +80,7 @@ public class Mapper {
     public SimpleAppointmentDTO mapToSimpleAppointmentDTO(Appointment appointment) {
         String patient_fullname = appointment.getPatient().getFirst_name()+" "+appointment.getPatient().getLast_name();
         return new SimpleAppointmentDTO(
-                appointment.getId_appointment(),
+                appointment.getIdAppointment(),
                 patient_fullname,
                 appointment.getStartingTime()
         );
@@ -119,6 +118,26 @@ public class Mapper {
                 age,
                 patientRecord.getPatientWeight(),
                 patientRecord.getPatientHeight()
+        );
+    }
+
+    public PatientDTO mapToPatientDTO(User user) {
+        String parent_email;
+        if (user.getParent()==null)
+            parent_email="No parent";
+        else
+            parent_email=user.getParent().getEmail();
+        return new PatientDTO(
+          user.getEmail(),
+          user.getClinic(),
+          user.getFirst_name(),
+          user.getLast_name(),
+          user.getDate_of_birth(),
+          user.getPhone(),
+          user.getSex(),
+          user.getRole(),
+          parent_email,
+          user.getAilments()
         );
     }
 }

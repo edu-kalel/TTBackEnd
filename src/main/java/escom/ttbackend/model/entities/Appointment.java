@@ -20,8 +20,8 @@ import java.time.LocalDateTime;
 public class Appointment implements Serializable {
     @Id
     @GeneratedValue(strategy =GenerationType.IDENTITY)
-    @Column(nullable = false, updatable = false)
-    private Long id_appointment;
+    @Column(nullable = false, updatable = false, name = "id_appointment")
+    private Long idAppointment;
 //    @Id
     @ManyToOne
     @JoinColumn(name = "nutritionist", referencedColumnName = "email", nullable = false)

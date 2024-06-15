@@ -1,26 +1,26 @@
 package escom.ttbackend.service.implementation;
 
 import escom.ttbackend.model.entities.Appointment;
-import escom.ttbackend.model.entities.DietPlan;
 import escom.ttbackend.model.entities.PatientRecord;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.AppointmentStatus;
 import escom.ttbackend.model.enums.Role;
 import escom.ttbackend.presentation.Mapper;
-import escom.ttbackend.presentation.dto.*;
+import escom.ttbackend.presentation.dto.AppointmentDTO;
+import escom.ttbackend.presentation.dto.BigPatientInfoDTO;
+import escom.ttbackend.presentation.dto.PatientRecordRequest;
+import escom.ttbackend.presentation.dto.PatientRegistrationByNutritionistDTO;
+import escom.ttbackend.presentation.dto.SimpleAppointmentDTO;
 import escom.ttbackend.presentation.dto.calculation.CaloriesCalculationDTO;
 import escom.ttbackend.presentation.dto.calculation.DietRequestBody;
 import escom.ttbackend.presentation.dto.calculation.PortionsDTO;
-import escom.ttbackend.repository.*;
+import escom.ttbackend.repository.AppointmentRepository;
+import escom.ttbackend.repository.DietPlanRepository;
+import escom.ttbackend.repository.PatientRecordRepository;
+import escom.ttbackend.repository.PostRepository;
+import escom.ttbackend.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,6 +28,12 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -87,13 +93,13 @@ public class NutriService{
         }
     }
 
-    public void updatePatient(PatientRegistrationByNutritionistDTO request) {    //TODO maybe refactor this, like -> adminService -> updateUser
+    public void updatePatient(PatientRegistrationByNutritionistDTO request, String nutritionistEmail) {    //TODO maybe refactor this, like -> adminService -> updateUser
         var user = userRepository.findById(request.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
-
+                .orElseThrow(() -> new UsernameNotFoundException("Patient does not exist"));
+        if (!userService.validateParentEmailForUser(request.getEmail(), nutritionistEmail))
+            throw new BadCredentialsException("No permissions over patient " + request.getEmail());
         if(request.getPassword().isBlank()) {
             user = User.builder().password(
-//                            userRepository.findByEmail(request.getEmail()).get().getPassword()
                             user.getPassword()
                     )
                     .clinic(user.getClinic())
@@ -155,33 +161,33 @@ public class NutriService{
                 .collect(Collectors.toList());
     }
 
-    public String addNewDietPlan(DietPlanDTO request, User parent) {
-        var user = userRepository.findById(request.getUser_email())
-                .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
-        if (!userService.validateParentEmailForUser(request.getUser_email(), parent.getEmail())&&!request.getUser_email().equals(parent.getEmail()))
-            throw new BadCredentialsException("The user you are trying to assign a Diet Plan is not yours to conquer");
-        DietPlan existingDietPlan = dietPlanRepository.findByUser_Email(user.getEmail());
-        if (existingDietPlan == null) {
-            DietPlan dietPlan = DietPlan.builder()
-                    .user(user)
-                    .goal(request.getGoal())
-                    .kcal(request.getKcal())
-                    .date(LocalDate.now())
-                    .comment(request.getComment())
-                    .meals(request.getMeals())
-                    .build();
-            dietPlanRepository.save(dietPlan);
-            return "Diet plan created successfully";
-        } else {
-            existingDietPlan.setGoal(request.getGoal());
-            existingDietPlan.setKcal(request.getKcal());
-            existingDietPlan.setDate(LocalDate.now());
-            existingDietPlan.setComment(request.getComment());
-            existingDietPlan.setMeals(request.getMeals());
-            dietPlanRepository.save(existingDietPlan);
-            return "Diet plan updated successfully";
-        }
-    }
+//    public String addNewDietPlan(DietPlanDTO request, User parent) {
+//        var user = userRepository.findById(request.getUser_email())
+//                .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
+//        if (!userService.validateParentEmailForUser(request.getUser_email(), parent.getEmail())&&!request.getUser_email().equals(parent.getEmail()))
+//            throw new BadCredentialsException("The user you are trying to assign a Diet Plan is not yours to conquer");
+//        DietPlan existingDietPlan = dietPlanRepository.findByUser_Email(user.getEmail());
+//        if (existingDietPlan == null) {
+//            DietPlan dietPlan = DietPlan.builder()
+//                    .user(user)
+//                    .goal(request.getGoal())
+//                    .kcal(request.getKcal())
+//                    .date(LocalDate.now())
+//                    .comment(request.getComment())
+//                    .meals(request.getMeals())
+//                    .build();
+//            dietPlanRepository.save(dietPlan);
+//            return "Diet plan created successfully";
+//        } else {
+//            existingDietPlan.setGoal(request.getGoal());
+//            existingDietPlan.setKcal(request.getKcal());
+//            existingDietPlan.setDate(LocalDate.now());
+//            existingDietPlan.setComment(request.getComment());
+//            existingDietPlan.setMeals(request.getMeals());
+//            dietPlanRepository.save(existingDietPlan);
+//            return "Diet plan updated successfully";
+//        }
+//    }
 
     public CaloriesCalculationDTO addPatientRecord(PatientRecordRequest request, String nutritionist_email) {
         var patient = userRepository.findById(request.getPatientEmail())
