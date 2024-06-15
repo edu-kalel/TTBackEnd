@@ -54,9 +54,9 @@ public class User implements Serializable, UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<Ailment> ailments;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonBackReference
-    private DietPlan dietPlan;
+    private Set<DietPlan> dietPlan;
 
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
     @JsonBackReference

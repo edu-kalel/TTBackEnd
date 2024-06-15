@@ -1,4 +1,4 @@
-package escom.ttbackend.presentation.dto;
+package escom.ttbackend.presentation.dto.diet;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

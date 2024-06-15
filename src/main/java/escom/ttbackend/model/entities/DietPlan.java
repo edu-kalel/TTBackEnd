@@ -24,12 +24,12 @@ public class DietPlan implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, updatable = false)
     private Long id_diet_plan;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "email", nullable = false)
     private User user;
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Goal goal;
+//    @Enumerated(EnumType.STRING)
+    private String goal;
     @Column(nullable = false)
     private int kcal;
     @Column(nullable = false)
