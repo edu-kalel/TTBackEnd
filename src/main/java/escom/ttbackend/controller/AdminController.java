@@ -1,6 +1,9 @@
 package escom.ttbackend.controller;
 
+import escom.ttbackend.model.entities.AlimentGroup;
 import escom.ttbackend.model.entities.User;
+import escom.ttbackend.presentation.dto.AlimentDTO;
+import escom.ttbackend.presentation.dto.AlimentGroupDTO;
 import escom.ttbackend.presentation.dto.PatientRegistrationBySecretaryDTO;
 import escom.ttbackend.presentation.dto.ReassignationRequest;
 import escom.ttbackend.presentation.dto.StaffRegistrationDTO;
@@ -8,6 +11,7 @@ import escom.ttbackend.presentation.dto.UserDTO;
 import escom.ttbackend.service.implementation.AdminService;
 import escom.ttbackend.service.implementation.SecretaryService;
 import escom.ttbackend.service.implementation.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +59,8 @@ public class AdminController {
         return new ResponseEntity<>(adminService.registerNewUser(registerRequest,admin.getClinic()), HttpStatus.CREATED);
     }
 
+    //dev
+
     @PostMapping("/development/list/new-staff-user")
     public ResponseEntity<String> registerNewStaffBatch(@RequestBody Set<StaffRegistrationDTO> registerRequest){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -73,6 +79,25 @@ public class AdminController {
             if (userService.validateParentEmailForUser(patientRegistrationDTO.getParent_email(), secretary.getEmail()))
                 secretaryService.registerNewPatient(patientRegistrationDTO, secretary.getEmail());
             else throw new BadCredentialsException("No permissions over this user");
+        }
+        return new ResponseEntity<>("idk man, maybe it's ok", HttpStatus.CREATED);
+    }
+
+    //aliments (and groups)
+    @PostMapping("/development/insert-all-aliment-groups")
+    @Operation(summary = "yep")
+    public ResponseEntity<String> insertAllAlimentGroups(@RequestBody Set<AlimentGroupDTO> request){
+        for (AlimentGroupDTO single : request){
+            adminService.addNewAlimentGroup(single);
+        }
+        return new ResponseEntity<>("idk man, maybe it's ok", HttpStatus.CREATED);
+    }
+
+    @PostMapping("/development/insert-all-aliments")
+    @Operation(summary = "yep")
+    public ResponseEntity<String> insertAllAliments(@RequestBody Set<AlimentDTO> request){
+       for (AlimentDTO single : request){
+            adminService.addNewAliment(single);
         }
         return new ResponseEntity<>("idk man, maybe it's ok", HttpStatus.CREATED);
     }

@@ -12,7 +12,7 @@ public class FractionConverter implements AttributeConverter<Fraction, String> {
         if (fraction == null) {
             return null;
         }
-        return fraction.toString();
+        return fraction.toProperString();
     }
 
     @Override

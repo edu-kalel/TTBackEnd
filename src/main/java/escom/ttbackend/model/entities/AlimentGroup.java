@@ -20,7 +20,7 @@ public class AlimentGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, updatable = false, name = "id_aliment_group")
     private Long idAlimentGroup;
-    @Column(length = 50, nullable = false)
+    @Column(length = 100, nullable = false)
     private String name;
     @Column(nullable = false, updatable = false)
     private int kcal;

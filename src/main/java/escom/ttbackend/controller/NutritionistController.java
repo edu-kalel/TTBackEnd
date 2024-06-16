@@ -10,6 +10,7 @@ import escom.ttbackend.service.implementation.NutriService;
 import escom.ttbackend.service.implementation.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -177,6 +178,10 @@ public class NutritionistController {
     }
 
 
+    // diet plan
+
+
+
 
     @PutMapping("/patient/update")
     @Operation(summary = "Updates Patient Info")
@@ -204,7 +209,6 @@ public class NutritionistController {
         nutriService.deleteAppointment(appointmentId, nutritionist);
         return new ResponseEntity<>("Cita eliminada", HttpStatus.OK);
     }
-
 
     @DeleteMapping("/patient/{email}")
     @Operation(summary = "Deletes a patient")

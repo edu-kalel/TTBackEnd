@@ -1,16 +1,23 @@
 package escom.ttbackend.service.implementation;
 
+import escom.ttbackend.model.entities.Aliment;
+import escom.ttbackend.model.entities.AlimentGroup;
 import escom.ttbackend.model.entities.Appointment;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.Role;
 import escom.ttbackend.presentation.Mapper;
+import escom.ttbackend.presentation.dto.AlimentDTO;
+import escom.ttbackend.presentation.dto.AlimentGroupDTO;
 import escom.ttbackend.presentation.dto.ReassignationRequest;
 import escom.ttbackend.presentation.dto.StaffRegistrationDTO;
 import escom.ttbackend.presentation.dto.UserDTO;
+import escom.ttbackend.repository.AlimentGroupRepository;
+import escom.ttbackend.repository.AlimentRepository;
 import escom.ttbackend.repository.AppointmentRepository;
 import escom.ttbackend.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.math.Fraction;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +34,8 @@ public class AdminService {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final AppointmentRepository appointmentRepository;
+    private final AlimentGroupRepository alimentGroupRepository;
+    private final AlimentRepository alimentRepository;
 
     public UserDTO registerNewUser(StaffRegistrationDTO request, String clinic) {
         if (userRepository.existsById(request.getEmail())){
@@ -134,5 +143,34 @@ public class AdminService {
                 .stream()
                 .map(mapper::mapToUserDTO)
                 .collect(Collectors.toList());
+    }
+
+    public void addNewAlimentGroup(AlimentGroupDTO request) {
+        var group = AlimentGroup.builder()
+          .name(request.getName())
+          .kcal(request.getKcal())
+          .carbs(request.getCarbs())
+          .fats(request.getFats())
+          .proteins(request.getProteins())
+          .build();
+        alimentGroupRepository.save(group);
+    }
+
+    public void addNewAliment(AlimentDTO request) {
+        var group = alimentGroupRepository.findByName(request.getGroupName());
+        Fraction fraction;
+        if (request.getDenominator()==0){
+            fraction = Fraction.getFraction(request.getWhole());
+        }
+        else {
+            fraction = Fraction.getFraction(request.getWhole(), request.getNumerator(), request.getDenominator());
+        }
+        var aliment = Aliment.builder()
+          .name(request.getName())
+          .quantity(fraction)
+          .unit(request.getUnit())
+          .alimentGroup(group)
+          .build();
+        alimentRepository.save(aliment);
     }
 }
