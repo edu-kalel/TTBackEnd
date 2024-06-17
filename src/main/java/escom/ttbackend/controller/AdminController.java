@@ -1,8 +1,7 @@
 package escom.ttbackend.controller;
 
-import escom.ttbackend.model.entities.AlimentGroup;
 import escom.ttbackend.model.entities.User;
-import escom.ttbackend.presentation.dto.AlimentDTO;
+import escom.ttbackend.presentation.dto.AlimentCreationDTO;
 import escom.ttbackend.presentation.dto.AlimentGroupDTO;
 import escom.ttbackend.presentation.dto.PatientRegistrationBySecretaryDTO;
 import escom.ttbackend.presentation.dto.ReassignationRequest;
@@ -95,8 +94,8 @@ public class AdminController {
 
     @PostMapping("/development/insert-all-aliments")
     @Operation(summary = "yep")
-    public ResponseEntity<String> insertAllAliments(@RequestBody Set<AlimentDTO> request){
-       for (AlimentDTO single : request){
+    public ResponseEntity<String> insertAllAliments(@RequestBody Set<AlimentCreationDTO> request){
+       for (AlimentCreationDTO single : request){
             adminService.addNewAliment(single);
         }
         return new ResponseEntity<>("idk man, maybe it's ok", HttpStatus.CREATED);

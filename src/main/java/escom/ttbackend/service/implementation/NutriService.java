@@ -1,21 +1,33 @@
 package escom.ttbackend.service.implementation;
 
+import escom.ttbackend.model.entities.Aliment;
 import escom.ttbackend.model.entities.Appointment;
+import escom.ttbackend.model.entities.DietPlan;
+import escom.ttbackend.model.entities.Meal;
 import escom.ttbackend.model.entities.PatientRecord;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.AppointmentStatus;
 import escom.ttbackend.model.enums.Role;
 import escom.ttbackend.presentation.Mapper;
+import escom.ttbackend.presentation.dto.AlimentDTO;
 import escom.ttbackend.presentation.dto.AppointmentDTO;
 import escom.ttbackend.presentation.dto.BigPatientInfoDTO;
+import escom.ttbackend.presentation.dto.DietPlanDTO;
+import escom.ttbackend.presentation.dto.FinishDietPlanDTO;
+import escom.ttbackend.presentation.dto.IndividualFoodDTO;
+import escom.ttbackend.presentation.dto.MealsToAddDTO;
 import escom.ttbackend.presentation.dto.PatientRecordRequest;
 import escom.ttbackend.presentation.dto.PatientRegistrationByNutritionistDTO;
 import escom.ttbackend.presentation.dto.SimpleAppointmentDTO;
+import escom.ttbackend.presentation.dto.SimpleDietPlanDTO;
 import escom.ttbackend.presentation.dto.calculation.CaloriesCalculationDTO;
 import escom.ttbackend.presentation.dto.calculation.DietRequestBody;
 import escom.ttbackend.presentation.dto.calculation.PortionsDTO;
+import escom.ttbackend.repository.AlimentGroupRepository;
+import escom.ttbackend.repository.AlimentRepository;
 import escom.ttbackend.repository.AppointmentRepository;
 import escom.ttbackend.repository.DietPlanRepository;
+import escom.ttbackend.repository.MealRepository;
 import escom.ttbackend.repository.PatientRecordRepository;
 import escom.ttbackend.repository.PostRepository;
 import escom.ttbackend.repository.UserRepository;
@@ -30,6 +42,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.Fraction;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,6 +62,9 @@ public class NutriService{
     private final PatientRecordRepository patientRecordRepository;
     private final EmailService emailService;
     private final DietPlanCalculationsService dietPlanCalculationsService;
+    private final AlimentRepository alimentRepository;
+    private final AlimentGroupRepository alimentGroupRepository;
+    private final MealRepository mealRepository;
 
 
     public List<SimpleAppointmentDTO> getAppointmentsByStatus(String email, AppointmentStatus status) {
@@ -225,5 +241,74 @@ public class NutriService{
             throw new BadCredentialsException("No permisos sobre el paciente: " + patientEmail);
         int age = userService.calculateAge(patient.getDate_of_birth());
         return mapper.mapToBigPatientInfoDTO(patient, age);
+    }
+
+    public Long createNewDietPlanEntity(String nutritionistEmail, String patientEmail) {
+        var patient = userRepository.findById(patientEmail)
+          .orElseThrow(() -> new UsernameNotFoundException("El paciente con email " + patientEmail + " no existe"));
+        if (!userService.validateParentEmailForUser(patientEmail, nutritionistEmail))
+            throw new BadCredentialsException("No permisos sobre el paciente: " + patientEmail);
+        DietPlan dietPlan = DietPlan.builder()
+          .user(patient)
+          .build();
+        return dietPlanRepository.save(dietPlan).getIdDietPlan();
+    }
+
+    public void addMealsToDietPlan(MealsToAddDTO request) {
+        var dietPlan = dietPlanRepository.findById(request.getDietPlanId()).get();
+        for (IndividualFoodDTO foodDTO : request.getMeals()){
+            var aliment = alimentRepository.findById(foodDTO.getAlimentId()).get();
+            Fraction multiplier = Fraction.getFraction(foodDTO.getQuantity());
+            Fraction quantityToEat = aliment.getQuantity().multiplyBy(multiplier);
+            var meal = Meal.builder()
+              .mealTime(request.getMealTime())
+              .dietOption(request.getDietOption())
+              .quantity(quantityToEat)
+              .unit(aliment.getUnit())
+              .aliment(aliment)
+              .dietPlan(dietPlan)
+              .build();
+            mealRepository.save(meal);
+            log.info("Saved meal -> {}", meal);
+        }
+    }
+
+    public void finishDietPlan(FinishDietPlanDTO request) {
+        var dietPlan = dietPlanRepository.findById(request.getId()).get();
+        dietPlan.setGoal(request.getGoal());
+        dietPlan.setComment(request.getComment());
+        dietPlan.setDate(LocalDate.now());
+        dietPlanRepository.save(dietPlan);
+    }
+
+    public List<AlimentDTO> getAllAliments() {
+        List<Aliment> alimentList = alimentRepository.findAll();
+        List<AlimentDTO> dtoList = new ArrayList<>();
+        for (Aliment aliment : alimentList){
+            AlimentDTO alimentDTO = mapper.mapToAlimentDTO(aliment);
+            dtoList.add(alimentDTO);
+        }
+        return dtoList;
+    }
+
+    public List<SimpleDietPlanDTO> getDietPlansListByPatient(String nutritionistEmail, String patientEmail) {
+        var patient = userRepository.findById(patientEmail)
+          .orElseThrow(() -> new UsernameNotFoundException("El paciente con email " + patientEmail + " no existe"));
+        if (!userService.validateParentEmailForUser(patientEmail, nutritionistEmail))
+            throw new BadCredentialsException("No permisos sobre el paciente: " + patientEmail);
+        List<DietPlan> dietPlanList = dietPlanRepository.findAllByUser_EmailOrderByDateDesc(patientEmail);
+        List<SimpleDietPlanDTO> list = new ArrayList<>();
+        for (DietPlan dietPlan : dietPlanList){
+            SimpleDietPlanDTO simpleDietPlanDTO = mapper.mapToSimpleDietPlanDTO(dietPlan);
+            list.add(simpleDietPlanDTO);
+        }
+        return list;
+    }
+
+    public DietPlanDTO getDietPlanById(String nutritionistEmail, Long dietPlanId) {
+        var dietPlan =  dietPlanRepository.findById(dietPlanId)
+          .orElseThrow(() -> new UsernameNotFoundException("Plan de dieta no existe"));
+        DietPlanDTO dietPlanDTO = mapper.mapToDietPlanDTO(dietPlan);
+        return dietPlanDTO;
     }
 }

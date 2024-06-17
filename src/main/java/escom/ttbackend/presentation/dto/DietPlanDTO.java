@@ -1,24 +1,29 @@
 package escom.ttbackend.presentation.dto;
 
-import escom.ttbackend.model.entities.Meal;
-import escom.ttbackend.model.enums.Goal;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.math.Fraction;
-
-import java.util.Set;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class DietPlanDTO {
-    private String user_email;
-    private Goal goal;
-    private int kcal;
+    private Long id;
+    private String patientEmail;
+    private String goal;
+    private LocalDate date;
     private String comment;
-    private Set<Meal> meals;
-//    private Fraction fraction;
+    private String breakfast1;
+    private String colation1_1;
+    private String lunch1;
+    private String colation2_1;
+    private String dinner1;
+    private String breakfast2;
+    private String colation1_2;
+    private String lunch2;
+    private String colation2_2;
+    private String dinner2;
 }

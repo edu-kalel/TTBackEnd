@@ -10,7 +10,6 @@ import escom.ttbackend.service.implementation.NutriService;
 import escom.ttbackend.service.implementation.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -179,6 +178,55 @@ public class NutritionistController {
 
 
     // diet plan
+    @PostMapping("/diet-plan/new/{patientEmail}")
+    @Operation(summary = "*creates* new diet plan and returns id")
+    public ResponseEntity<Long> newDietPlan(@PathVariable String patientEmail){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User nutritionist = (User) authentication.getPrincipal();
+        return new ResponseEntity<>(nutriService.createNewDietPlanEntity(nutritionist.getEmail(), patientEmail), HttpStatus.OK);
+    }
+
+    @PostMapping("/diet-plan/add-meals")
+    @Operation(summary = "adds meals to diet plan")
+    public ResponseEntity<String> addsMeals(@RequestBody MealsToAddDTO request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User nutritionist = (User) authentication.getPrincipal();
+        nutriService.addMealsToDietPlan(request);
+        return new ResponseEntity<>("Añadidas", HttpStatus.OK);
+    }
+
+    @PutMapping("/diet-plan/finish")
+    @Operation(summary = "finish the creation of diet plan and persists it")
+    public ResponseEntity<String> finishDietPlan(@RequestBody FinishDietPlanDTO request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User nutritionist = (User) authentication.getPrincipal();
+        nutriService.finishDietPlan(request);
+        return new ResponseEntity<>("Hecho!", HttpStatus.OK);
+    }
+
+    @GetMapping("/diet-plan/get-all-aliments")
+    @Operation(summary = "gets list of all aliments")
+    public ResponseEntity<List<AlimentDTO>> getAllAliments(){
+        List<AlimentDTO> list = nutriService.getAllAliments();
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/patient/diet-plan-list/{patientEmail}")
+    public ResponseEntity<List<SimpleDietPlanDTO>> getDietPlansListByPatient(@PathVariable String patientEmail){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User nutritionist = (User) authentication.getPrincipal();
+        List<SimpleDietPlanDTO> list = nutriService.getDietPlansListByPatient(nutritionist.getEmail(), patientEmail);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/get-diet-plan-by-id/{dietPlanId}")
+    public ResponseEntity<DietPlanDTO> getDietPlanById(@PathVariable Long dietPlanId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User nutritionist = (User) authentication.getPrincipal();
+        DietPlanDTO dietPlanDTO = nutriService.getDietPlanById(nutritionist.getEmail(), dietPlanId);
+        return new ResponseEntity<>(dietPlanDTO, HttpStatus.OK);
+    }
+
 
 
 
@@ -223,8 +271,6 @@ public class NutritionistController {
         }
         else throw new BadCredentialsException("No tienes permisos sobre este usuario");
     }
-
-
 
 
 }

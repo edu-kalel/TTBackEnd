@@ -6,7 +6,7 @@ import escom.ttbackend.model.entities.Appointment;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.Role;
 import escom.ttbackend.presentation.Mapper;
-import escom.ttbackend.presentation.dto.AlimentDTO;
+import escom.ttbackend.presentation.dto.AlimentCreationDTO;
 import escom.ttbackend.presentation.dto.AlimentGroupDTO;
 import escom.ttbackend.presentation.dto.ReassignationRequest;
 import escom.ttbackend.presentation.dto.StaffRegistrationDTO;
@@ -156,7 +156,7 @@ public class AdminService {
         alimentGroupRepository.save(group);
     }
 
-    public void addNewAliment(AlimentDTO request) {
+    public void addNewAliment(AlimentCreationDTO request) {
         var group = alimentGroupRepository.findByName(request.getGroupName());
         Fraction fraction;
         if (request.getDenominator()==0){

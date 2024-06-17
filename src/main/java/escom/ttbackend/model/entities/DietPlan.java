@@ -25,12 +25,12 @@ public class DietPlan implements Serializable {
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "email", nullable = false)
     private User user;
-    @Column(nullable = false)
+//    @Column(nullable = false)
 //    @Enumerated(EnumType.STRING)
     private String goal;
-    @Column(nullable = false)
-    private int kcal;
-    @Column(nullable = false)
+//    @Column(nullable = false)
+//    private int kcal;
+//    @Column(nullable = true)
     private LocalDate date;
     private String comment;
     @OneToMany(mappedBy = "dietPlan", fetch = FetchType.LAZY)

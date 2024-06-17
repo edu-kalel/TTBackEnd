@@ -57,10 +57,28 @@ public class PatientController {
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
-//    @GetMapping("/diet-plan")
-//    public ResponseEntity<DietPlanDTO> getLatestDietPlan(){
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        User patient = (User) authentication.getPrincipal();
-//        return new ResponseEntity<>(userService.getLatestDietPlan(patient.getEmail()), HttpStatus.OK);
-//    }
+    @GetMapping("/diet-plan/get-last")
+    public ResponseEntity<DietPlanDTO> getLatestDietPlan(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User patient = (User) authentication.getPrincipal();
+        DietPlanDTO dietPlanDTO = userService.getLatestDietPlan(patient.getEmail());
+        return new ResponseEntity<>(dietPlanDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/diet-plan-list")
+    public ResponseEntity<List<SimpleDietPlanDTO>> getDietPlansList(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User patient = (User) authentication.getPrincipal();
+        List<SimpleDietPlanDTO> list = patientService.getDietPlansList(patient.getEmail());
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/get-diet-plan-by-id/{dietPlanId}")
+    public ResponseEntity<DietPlanDTO> getDietPlanById(@PathVariable Long dietPlanId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User patient = (User) authentication.getPrincipal();
+        DietPlanDTO dietPlanDTO = patientService.getDietPlanById(patient.getEmail(), dietPlanId);
+        return new ResponseEntity<>(dietPlanDTO, HttpStatus.OK);
+    }
+
 }

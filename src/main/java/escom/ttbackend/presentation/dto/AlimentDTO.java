@@ -6,10 +6,13 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class AlimentDTO {
-  private String groupName;
+  private Long id;
   private String name;
+  private String group;
+  private String quantity;
   private String unit;
-  private int whole;
-  private int numerator;
-  private int denominator;
+  private String kcal;
+  private String carbs;
+  private String fats;
+  private String proteins;
 }

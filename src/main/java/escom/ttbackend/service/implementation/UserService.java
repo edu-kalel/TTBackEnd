@@ -183,4 +183,10 @@ public class UserService {
         return mapper.mapToPatientDTO(userRepository.findById(email)
           .orElseThrow(() -> new UsernameNotFoundException("User does not exist")));
     }
+
+  public DietPlanDTO getLatestDietPlan(String email) {
+        DietPlan dietPlan = dietPlanRepository.findFirstByUser_EmailOrderByDateDesc(email);
+        DietPlanDTO dietPlanDTO = mapper.mapToDietPlanDTO(dietPlan);
+        return dietPlanDTO;
+  }
 }
