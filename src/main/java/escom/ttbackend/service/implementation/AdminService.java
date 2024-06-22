@@ -16,15 +16,14 @@ import escom.ttbackend.repository.AlimentRepository;
 import escom.ttbackend.repository.AppointmentRepository;
 import escom.ttbackend.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.math.Fraction;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

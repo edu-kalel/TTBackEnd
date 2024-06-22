@@ -1,24 +1,36 @@
 package escom.ttbackend.service.implementation;
 
-import escom.ttbackend.model.entities.*;
+import escom.ttbackend.model.entities.Appointment;
+import escom.ttbackend.model.entities.DietPlan;
+import escom.ttbackend.model.entities.Post;
+import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.AppointmentStatus;
 import escom.ttbackend.presentation.Mapper;
-import escom.ttbackend.presentation.dto.*;
-import escom.ttbackend.repository.*;
+import escom.ttbackend.presentation.dto.AppointmentDTO;
+import escom.ttbackend.presentation.dto.AppointmentRequest;
+import escom.ttbackend.presentation.dto.DietPlanDTO;
+import escom.ttbackend.presentation.dto.PatientDTO;
+import escom.ttbackend.presentation.dto.PatientRecordResponse;
+import escom.ttbackend.presentation.dto.PostDTO;
+import escom.ttbackend.presentation.dto.SimpleUserDTO;
+import escom.ttbackend.presentation.dto.UserDTO;
+import escom.ttbackend.repository.AppointmentRepository;
+import escom.ttbackend.repository.DietPlanRepository;
+import escom.ttbackend.repository.PatientRecordRepository;
+import escom.ttbackend.repository.PostRepository;
+import escom.ttbackend.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -31,13 +43,6 @@ public class UserService {
     private final PatientRecordRepository patientRecordRepository;
     private final EmailService emailService;
 
-    public User save(User newUser){
-        return userRepository.save(newUser);
-    }
-
-    public User update(User user) {
-        return userRepository.save(user);
-    }
 
     public UserDTO getUserDTObyID(String email){
         return mapper.mapToUserDTO(userRepository.findById(email)
@@ -59,9 +64,6 @@ public class UserService {
         return userRepository.existsById(email);
     }
 
-    public User getByEmail(String email) {
-        return userRepository.findById(email).orElseThrow();
-    }
     public boolean validateParentEmailForUser(String userEmail, String parentEmail) {
         User user = userRepository.findById(userEmail).orElse(null);//TODO IMPROOOOVE FFS
         if (user != null) {
@@ -102,15 +104,6 @@ public class UserService {
         User nutritionist = userRepository.findById(email).orElseThrow(() -> new UsernameNotFoundException("Nutritionist does not exist"));
         User patient = userRepository.findById(appointmentRequest.getPatient_email()).orElseThrow(() -> new UsernameNotFoundException("Patient does not exist"));
         if (validateParentEmailForUser(patient.getEmail(), nutritionist.getEmail())) {
-
-//            // Check for existing appointments that overlap with the new appointment
-//            List<Appointment> existingAppointments = appointmentRepository.findByNutritionistAndTimeOverlap(
-//                    nutritionist, appointmentRequest.getStarting_time(), appointmentRequest.getEnding_time());
-//
-//            // Check if there are any overlapping appointments
-//            if (!existingAppointments.isEmpty()) {
-//                throw new EntityExistsException("The new appointment overlaps with an existing appointment.");
-//            }
 
             checkOverlappingAppointments(nutritionist, appointmentRequest.getStarting_time(), appointmentRequest.getEnding_time());
 
@@ -158,21 +151,6 @@ public class UserService {
                 .map(mapper::mapToPatientRecordDTO)
                 .collect(Collectors.toList());
     }
-
-//    public DietPlanDTO getLatestDietPlan(String patientEmail) {
-//        // Implement logic to retrieve the latest DietPlan for the patient
-//        DietPlan latestDietPlan = dietPlanRepository.findFirstByUser_EmailOrderByDateDesc(patientEmail);
-//        // Convert DietPlan to DietPlanDTO if necessary
-//        return mapper.mapToDietPlanDTO(latestDietPlan);
-//    }
-
-//    public DietPlanDTO getDietPlan(String email) {
-//        DietPlan dietPlan = dietPlanRepository.findByUser_Email(email);
-//        if (dietPlan == null) {
-//            throw new EntityNotFoundException("No Diet Plan Assigned yet");
-//        }
-//        return mapper.mapToDietPlanDTO(dietPlan);
-//    }
 
     public int calculateAge(LocalDate dateOfBirth) {
         Period period = Period.between(dateOfBirth, LocalDate.now());

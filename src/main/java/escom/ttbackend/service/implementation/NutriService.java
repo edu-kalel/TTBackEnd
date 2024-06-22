@@ -177,34 +177,6 @@ public class NutriService{
                 .collect(Collectors.toList());
     }
 
-//    public String addNewDietPlan(DietPlanDTO request, User parent) {
-//        var user = userRepository.findById(request.getUser_email())
-//                .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
-//        if (!userService.validateParentEmailForUser(request.getUser_email(), parent.getEmail())&&!request.getUser_email().equals(parent.getEmail()))
-//            throw new BadCredentialsException("The user you are trying to assign a Diet Plan is not yours to conquer");
-//        DietPlan existingDietPlan = dietPlanRepository.findByUser_Email(user.getEmail());
-//        if (existingDietPlan == null) {
-//            DietPlan dietPlan = DietPlan.builder()
-//                    .user(user)
-//                    .goal(request.getGoal())
-//                    .kcal(request.getKcal())
-//                    .date(LocalDate.now())
-//                    .comment(request.getComment())
-//                    .meals(request.getMeals())
-//                    .build();
-//            dietPlanRepository.save(dietPlan);
-//            return "Diet plan created successfully";
-//        } else {
-//            existingDietPlan.setGoal(request.getGoal());
-//            existingDietPlan.setKcal(request.getKcal());
-//            existingDietPlan.setDate(LocalDate.now());
-//            existingDietPlan.setComment(request.getComment());
-//            existingDietPlan.setMeals(request.getMeals());
-//            dietPlanRepository.save(existingDietPlan);
-//            return "Diet plan updated successfully";
-//        }
-//    }
-
     public CaloriesCalculationDTO addPatientRecord(PatientRecordRequest request, String nutritionist_email) {
         var patient = userRepository.findById(request.getPatientEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Patient " + request.getPatientEmail() + " does not exist"));

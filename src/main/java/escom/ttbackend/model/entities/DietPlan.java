@@ -1,15 +1,23 @@
 package escom.ttbackend.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.Set;
 
 @Entity
 @Data
@@ -25,12 +33,7 @@ public class DietPlan implements Serializable {
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "email", nullable = false)
     private User user;
-//    @Column(nullable = false)
-//    @Enumerated(EnumType.STRING)
     private String goal;
-//    @Column(nullable = false)
-//    private int kcal;
-//    @Column(nullable = true)
     private LocalDate date;
     private String comment;
     @OneToMany(mappedBy = "dietPlan", fetch = FetchType.LAZY)
@@ -38,5 +41,3 @@ public class DietPlan implements Serializable {
     private Set<Meal> meals;
 }
 
-
-//REMEMBEEEEER, PATIENT DOESN'T NEED ALL HISTORIAL OF DIET_PLANS, JUST WITH THE LAST ONE IS ENOOOOOUUUUGH :D

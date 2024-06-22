@@ -20,10 +20,6 @@ public class FractionConverter implements AttributeConverter<Fraction, String> {
         if (dbData == null || dbData.isEmpty()) {
             return null;
         }
-//        String[] parts = dbData.split("/");
-//        int numerator = Integer.parseInt(parts[0]);
-//        int denominator = Integer.parseInt(parts[1]);
-//        return new Fraction(numerator, denominator);
         return Fraction.getFraction(dbData);
     }
 }
