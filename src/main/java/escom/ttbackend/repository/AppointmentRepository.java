@@ -24,6 +24,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 //                                                       @Param("startTime") LocalDateTime startTime,
 //                                                       @Param("endTime") LocalDateTime endTime);
 
+    Appointment findFirstByNutritionist_EmailAndStartingTimeBetweenAndAppointmentStatusOrderByStartingTimeAsc(
+      String nutritionistEmail, LocalDateTime startOfDay, LocalDateTime endOfDay, AppointmentStatus status);
+
+
     @Query("SELECT a FROM Appointment a WHERE a.nutritionist = :nutritionist " +
             "AND ((a.startingTime BETWEEN :startTime AND :endTime) OR " +
             "(a.endingTime BETWEEN :startTime AND :endTime)) " +

@@ -35,6 +35,14 @@ public class NutritionistController {
         this.userService = userService;
     }
 
+    @GetMapping("/cards")
+    public ResponseEntity<List<CardDTO>> getCards() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User nutri = (User) authentication.getPrincipal();
+        List<CardDTO> cards = nutriService.getCards(nutri.getEmail());
+        return new ResponseEntity<>(cards, HttpStatus.OK);
+    }
+
     @GetMapping("/patients")
     @Operation(summary = "Returns a list of Patients under the Nutritionist Watch")
     public ResponseEntity<List<SimpleUserDTO>> getAllPatients() {

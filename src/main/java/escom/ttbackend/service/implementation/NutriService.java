@@ -12,6 +12,7 @@ import escom.ttbackend.presentation.Mapper;
 import escom.ttbackend.presentation.dto.AlimentDTO;
 import escom.ttbackend.presentation.dto.AppointmentDTO;
 import escom.ttbackend.presentation.dto.BigPatientInfoDTO;
+import escom.ttbackend.presentation.dto.CardDTO;
 import escom.ttbackend.presentation.dto.DietPlanDTO;
 import escom.ttbackend.presentation.dto.FinishDietPlanDTO;
 import escom.ttbackend.presentation.dto.IndividualFoodDTO;
@@ -31,6 +32,7 @@ import escom.ttbackend.repository.MealRepository;
 import escom.ttbackend.repository.PatientRecordRepository;
 import escom.ttbackend.repository.PostRepository;
 import escom.ttbackend.repository.UserRepository;
+import escom.ttbackend.utils.CardGenerator;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
@@ -52,6 +54,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class NutriService{
+    private final CardGenerator cardGenerator;
     private final UserRepository userRepository;
     private final AppointmentRepository appointmentRepository;
     private final Mapper mapper;
@@ -282,5 +285,9 @@ public class NutriService{
           .orElseThrow(() -> new UsernameNotFoundException("Plan de dieta no existe"));
         DietPlanDTO dietPlanDTO = mapper.mapToDietPlanDTO(dietPlan);
         return dietPlanDTO;
+    }
+
+    public List<CardDTO> getCards(String email) {
+        return cardGenerator.getCards(email);
     }
 }
