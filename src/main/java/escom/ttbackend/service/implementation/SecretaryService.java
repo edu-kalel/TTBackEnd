@@ -32,6 +32,7 @@ public class SecretaryService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final NutriService nutriService;
+    private final EmailService emailService;
 
     public void registerNewPatient(PatientRegistrationBySecretaryDTO request, String secretaryMail) {
         if (userRepository.existsById(request.getEmail())){
@@ -196,6 +197,8 @@ public class SecretaryService {
         if (!userService.validateParentEmailForUser(nutritionist.getEmail(), secretaryEmail))
             throw new BadCredentialsException("No permissions over nutri " + nutritionist.getEmail());
         if (appointment.getNutritionist().getEmail().equals(nutritionist.getEmail())){
+            User patient = appointment.getPatient();
+            emailService.sendsAppointementDeletionMessage(nutritionist, patient, appointment);
             appointmentRepository.deleteById(appointmentId);
         }
     }

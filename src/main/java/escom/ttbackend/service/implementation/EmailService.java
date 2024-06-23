@@ -24,7 +24,8 @@ public class EmailService{
                 + "</b>, la cita solicitada con tu Nutriólogo ("
                 + nutritionist.getFirst_name()
                 + ") ha sido aprobada para la siguiente fecha y hora: <br>"
-                + appointment.getStartingTime()
+                + "Fecha: " + appointment.getStartingTime().getDayOfMonth() + "/" + appointment.getStartingTime().getMonthValue() + "/" + appointment.getStartingTime().getYear()
+                + "   Hora: " + appointment.getStartingTime().getHour() + ":" + appointment.getStartingTime().getMinute()
                 + "<br>Saludos";
         String subject = "Confirmación de cita - "+patient.getClinic();
         try {
@@ -46,10 +47,11 @@ public class EmailService{
                 + nutritionist.getClinic()
                 + "</h1><br>Hola <b>"
                 + patient.getFirst_name()
-                + "</b>, se te ha agendando con tu Nutriólogo ("
+                + "</b>, se te ha agendando una cita con tu Nutriólogo ("
                 + nutritionist.getFirst_name()
                 + ") para la siguiente fecha y hora: <br>"
-                + appointment.getStartingTime()
+                + "Fecha: " + appointment.getStartingTime().getDayOfMonth() + "/" + appointment.getStartingTime().getMonthValue() + "/" + appointment.getStartingTime().getYear()
+                + "   Hora: " + appointment.getStartingTime().getHour() + ":" + appointment.getStartingTime().getMinute()
                 + "<br>Saludos";
         String subject = "Nueva Cita Agendada - "+patient.getClinic();
         try {
@@ -57,6 +59,32 @@ public class EmailService{
             helper.setFrom("no.reply.nutrisystem@gmail.com");
             helper.setTo("emendozag1602@alumno.ipn.mx");
 //            helper.setTo("jtirado@ipn.mx");
+//            helper.setTo(patient.getEmail());
+            helper.setSubject(subject);
+            helper.setText(text, true); // Enable HTML
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send email", e);
+        }
+        emailSender.send(message);
+    }
+
+    public void sendsAppointementDeletionMessage(User nutritionist, User patient, Appointment appointment) {
+        MimeMessage message = emailSender.createMimeMessage();
+        String text = "<h1>"
+          + nutritionist.getClinic()
+          + "</h1><br>Hola <b>"
+          + patient.getFirst_name()
+          + "</b>, la cita con tu Nutriólogo ("
+          + nutritionist.getFirst_name()
+          + ") con la siguiente fecha y hora: <br>"
+          + "Fecha: " + appointment.getStartingTime().getDayOfMonth() + "/" + appointment.getStartingTime().getMonthValue() + "/" + appointment.getStartingTime().getYear()
+          + "   Hora: " + appointment.getStartingTime().getHour() + ":" + appointment.getStartingTime().getMinute()
+          + "<br> ha sido cancelada/rechazada.<br>Lamentamos las molestias. Saludos";
+        String subject = "Cancelación - Rechazo de cita - "+patient.getClinic();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom("no.reply.nutrisystem@gmail.com");
+            helper.setTo("emendozag1602@alumno.ipn.mx");
 //            helper.setTo(patient.getEmail());
             helper.setSubject(subject);
             helper.setText(text, true); // Enable HTML

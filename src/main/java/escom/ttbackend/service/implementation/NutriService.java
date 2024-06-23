@@ -166,6 +166,8 @@ public class NutriService{
     public void deleteAppointment(Long appointmentId, User nutritionist) {
         Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new EntityNotFoundException("Appointment does not exist"));
         if (appointment.getNutritionist().getEmail().equals(nutritionist.getEmail())){
+            User patient = appointment.getPatient();
+            emailService.sendsAppointementDeletionMessage(nutritionist, patient, appointment);
             appointmentRepository.deleteById(appointmentId);
         }
     }
