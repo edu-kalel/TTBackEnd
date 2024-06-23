@@ -22,8 +22,8 @@ public class CalculationRequestClient {
 
         log.info("enters send and receive in calc request client");
 
-        String nu_valid = "7b10d40bc004d71c6fb669614c4ba722";
-        String nutre_in = "a01ba0c11237ca30e52c91928ecb1d43c8b3385e";
+        String nu_valid = "a3b33be29a4be101d4fb67aa141b2eb3";
+        String nutre_in = "8acbb2c1f58bf19b0f3e8ebb1c49d58b3963f526";
         HttpURLConnection http = getHttpURLConnection(nu_valid, nutre_in);
 
         byte[] out = getBytes(request, nu_valid);
