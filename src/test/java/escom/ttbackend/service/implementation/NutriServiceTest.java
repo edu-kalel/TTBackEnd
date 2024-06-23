@@ -272,7 +272,7 @@ public class NutriServiceTest {
     when(userService.validateParentEmailForUser(patientEmail, nutritionistEmail)).thenReturn(true);
     when(dietPlanCalculationsService.getPortions(request)).thenReturn(new PortionsDTO());
 
-    PortionsDTO result = nutriService.calculatePortions(request, nutritionistEmail, patientEmail);
+    PortionsDTO result = nutriService.calculatePortions(request);
 
     assertNotNull(result);
   }

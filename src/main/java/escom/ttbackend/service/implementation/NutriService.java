@@ -200,12 +200,8 @@ public class NutriService{
     }
 
 
-    public PortionsDTO calculatePortions(DietRequestBody request, String nutritionistEmail, String patientEmail) throws IOException {
+    public PortionsDTO calculatePortions(DietRequestBody request) throws IOException {
         log.info("enters calculate portions in nutri service");
-        var patient = userRepository.findById(patientEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("Patient " + patientEmail + " does not exist"));
-        if (!userService.validateParentEmailForUser(patientEmail, nutritionistEmail))
-            throw new BadCredentialsException("No permissions over patient " + patientEmail);
         return dietPlanCalculationsService.getPortions(request);
     }
 

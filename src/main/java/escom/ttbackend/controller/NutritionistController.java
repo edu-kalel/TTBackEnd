@@ -176,12 +176,10 @@ public class NutritionistController {
     }
 
 
-    @PostMapping("/calculate-portions/{patientEmail}")
+    @PostMapping("/calculate-portions")
     @Operation(summary = "Calculates portions")
-    public ResponseEntity<PortionsDTO> calculatePortions(@RequestBody DietRequestBody request, @PathVariable String patientEmail) throws IOException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User nutritionist = (User) authentication.getPrincipal();
-        return new ResponseEntity<>(nutriService.calculatePortions(request, nutritionist.getEmail(), patientEmail), HttpStatus.OK);
+    public ResponseEntity<PortionsDTO> calculatePortions(@RequestBody DietRequestBody request) throws IOException {
+        return new ResponseEntity<>(nutriService.calculatePortions(request), HttpStatus.OK);
     }
 
 
