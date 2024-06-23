@@ -28,12 +28,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final AppointmentRepository appointmentRepository;
@@ -119,6 +121,7 @@ public class UserService {
             if (appointmentStatus.equals(AppointmentStatus.CONFIRMED))
                 emailService.sendsAppointementCreationMessage(nutritionist, patient, appointment);
 
+            log.info("Cita agendada -> {}", appointmentDTO);
             return appointmentDTO;
         }
         else throw new BadCredentialsException("No permissions over this user");
