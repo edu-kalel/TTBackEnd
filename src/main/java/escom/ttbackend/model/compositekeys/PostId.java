@@ -12,18 +12,18 @@ import java.util.Objects;
 @NoArgsConstructor
 public class PostId implements Serializable {
     private User patient;
-    private LocalDateTime date_time;
+    private LocalDateTime date;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PostId postId = (PostId) o;
-        return Objects.equals(patient, postId.patient) && Objects.equals(date_time, postId.date_time);
+        return Objects.equals(patient, postId.patient) && Objects.equals(date, postId.date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(patient, date_time);
+        return Objects.hash(patient, date);
     }
 }

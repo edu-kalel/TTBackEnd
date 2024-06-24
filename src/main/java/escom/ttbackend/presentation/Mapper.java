@@ -51,7 +51,7 @@ public class Mapper {
     public PostDTO mapToPostDTO(Post post) {
         return new PostDTO(
                 post.getPatient().getFirst_name(),
-                post.getDate_time(),
+                post.getDate(),
                 post.getContent()
         );
     }

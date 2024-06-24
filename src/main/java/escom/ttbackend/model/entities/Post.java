@@ -29,7 +29,7 @@ public class Post implements Serializable {
     private User patient;
     @Id
     @Column(nullable = false)
-    private LocalDateTime date_time;
+    private LocalDateTime date;
 
     @Column(nullable = false)
     private String content;

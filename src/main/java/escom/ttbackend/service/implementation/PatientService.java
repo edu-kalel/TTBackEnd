@@ -31,7 +31,7 @@ public class PatientService {
 
         var post = Post.builder()
                 .patient(patient)
-                .date_time(LocalDateTime.now())
+                .date(LocalDateTime.now())
                 .content(content)
                 .build();
         return mapper.mapToPostDTO(postRepository.save(post));//TODO maybe handle potential errors ?

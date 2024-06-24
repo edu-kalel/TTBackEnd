@@ -58,7 +58,7 @@ public class UserService {
     @Transactional
     public void deletePatient(String email) {
         List<Appointment> appointments = appointmentRepository.findByPatient_Email(email);
-        List<Post> posts = postRepository.findByPatient_Email(email);
+        List<Post> posts = postRepository.findByPatient_EmailOrderByDateDesc(email);
         List<DietPlan> dietPlans = dietPlanRepository.findByUser_Email(email);
         List<PatientRecord> patientRecords = patientRecordRepository.findByPatient_Email(email);
         if (!appointments.isEmpty())
@@ -156,7 +156,7 @@ public class UserService {
     }
 
     public List<PostDTO> getPostsByPatient(String email) {
-        List<Post> posts = postRepository.findByPatient_Email(email);
+        List<Post> posts = postRepository.findByPatient_EmailOrderByDateDesc(email);
         List<PostDTO> postDTOS = new ArrayList<>();
         for (Post post : posts) {
             postDTOS.add(mapper.mapToPostDTO(post));
