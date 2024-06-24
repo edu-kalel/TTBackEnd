@@ -173,7 +173,7 @@ public class NutriService{
     }
 
     public List<SimpleAppointmentDTO> getTodayConfirmedAppointments(String nutritionistEmail) {
-        LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime startOfDay = LocalDateTime.now().minusMinutes(15);
         LocalDateTime endOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
         return appointmentRepository.findByNutritionist_EmailAndStartingTimeBetweenAndAppointmentStatusOrderByStartingTimeAsc(
                 nutritionistEmail, startOfDay, endOfDay, AppointmentStatus.CONFIRMED)

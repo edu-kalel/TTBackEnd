@@ -39,8 +39,17 @@ public class CardGenerator {
       nextAppointmentTime = "-";
     }
     else {
-      String nextAppointmentHour = String.valueOf(nextAppointment.getStartingTime().getHour());
-      String nextAppointmentMinute = String.valueOf(nextAppointment.getStartingTime().getMinute());
+      int minutes = nextAppointment.getStartingTime().getMinute();
+      String nextAppointmentHour;
+      String nextAppointmentMinute;
+      if (minutes < 10){
+        nextAppointmentMinute = "0" + minutes;
+      }
+      else {
+        nextAppointmentMinute = String.valueOf(minutes);
+      }
+      nextAppointmentHour = String.valueOf(nextAppointment.getStartingTime().getHour());
+
       nextAppointmentTime = nextAppointmentHour + ":" + nextAppointmentMinute;
     }
 
@@ -62,7 +71,15 @@ public class CardGenerator {
     else
     {
       Appointment last = todayAppointments.get(todayAppointments.size() - 1);
-      lastAppointmentTime = last.getStartingTime().getHour() + ":" + last.getStartingTime().getMinute();
+      int lastMinute = last.getStartingTime().getMinute();
+      String lastMinuteString;
+      if (lastMinute<10){
+        lastMinuteString = "0" + lastMinute;
+      }
+      else{
+        lastMinuteString = String.valueOf(lastMinute);
+      }
+      lastAppointmentTime = last.getStartingTime().getHour() + ":" + lastMinuteString;
     }
 
     cards.add(new CardDTO(lastAppointmentTime, "Última cita a las:"));
