@@ -119,6 +119,7 @@ public class Mapper {
     public BigPatientInfoDTO mapToBigPatientInfoDTO(User patient, int age) {
         PatientRecord patientRecord = patientRecordRepository.findFirstByPatient_EmailOrderByDateDesc(patient.getEmail());
         return new BigPatientInfoDTO(
+                patient.getEmail(),
                 patient.getFirst_name() + " " + patient.getLast_name(),
                 age,
                 patientRecord.getPatientWeight(),

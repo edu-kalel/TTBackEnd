@@ -9,6 +9,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class BigPatientInfoDTO {
+    private String email;
     private String fullName;
     private int age;
     private int weight;
