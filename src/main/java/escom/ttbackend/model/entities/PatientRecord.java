@@ -1,6 +1,7 @@
 package escom.ttbackend.model.entities;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,5 +28,5 @@ public class PatientRecord {
     @Column(nullable = false, updatable = false, name = "patient_weight")
     private int patientWeight;
     @Column(nullable = false, updatable = false)
-    private LocalDate date;
+    private LocalDateTime date;
 }

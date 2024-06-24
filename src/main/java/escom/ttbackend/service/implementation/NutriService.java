@@ -191,7 +191,7 @@ public class NutriService{
                 .patient(patient)
                 .patientHeight(request.getPatientHeight())
                 .patientWeight(request.getPatientWeight())
-                .date(LocalDate.now())
+                .date(LocalDateTime.now())
                 .build();
         patientRecordRepository.save(patientRecord);
         CaloriesCalculationDTO calculation = new CaloriesCalculationDTO();
