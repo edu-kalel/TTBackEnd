@@ -24,6 +24,11 @@ public class EmailService{
 
     public void sendsAppointementConfirmationMessage(User nutritionist, User patient, Appointment appointment) {
         MimeMessage message = emailSender.createMimeMessage();
+        String minutes;
+        if (appointment.getStartingTime().getMinute()<10)
+            minutes = "0" + appointment.getStartingTime().getMinute();
+        else
+            minutes = "" + appointment.getStartingTime().getMinute();
         String text = "<h1>"
                 + nutritionist.getClinic()
                 + "</h1><br>Hola <b>"
@@ -32,7 +37,7 @@ public class EmailService{
                 + nutritionist.getFirst_name()
                 + ") ha sido aprobada para la siguiente fecha y hora: <br>"
                 + "Fecha: " + appointment.getStartingTime().getDayOfMonth() + "/" + appointment.getStartingTime().getMonthValue() + "/" + appointment.getStartingTime().getYear()
-                + "   Hora: " + appointment.getStartingTime().getHour() + ":" + appointment.getStartingTime().getMinute()
+                + "   Hora: " + appointment.getStartingTime().getHour() + ":" + minutes
                 + "<br>Saludos";
         String subject = "Confirmación de cita - "+patient.getClinic();
         try {
@@ -50,6 +55,11 @@ public class EmailService{
 
     public void sendsAppointementCreationMessage(User nutritionist, User patient, Appointment appointment) {
         MimeMessage message = emailSender.createMimeMessage();
+        String minutes;
+        if (appointment.getStartingTime().getMinute()<10)
+            minutes = "0" + appointment.getStartingTime().getMinute();
+        else
+            minutes = "" + appointment.getStartingTime().getMinute();
         String text = "<h1>"
                 + nutritionist.getClinic()
                 + "</h1><br>Hola <b>"
@@ -58,7 +68,7 @@ public class EmailService{
                 + nutritionist.getFirst_name()
                 + ") para la siguiente fecha y hora: <br>"
                 + "Fecha: " + appointment.getStartingTime().getDayOfMonth() + "/" + appointment.getStartingTime().getMonthValue() + "/" + appointment.getStartingTime().getYear()
-                + "   Hora: " + appointment.getStartingTime().getHour() + ":" + appointment.getStartingTime().getMinute()
+                + "   Hora: " + appointment.getStartingTime().getHour() + ":" + minutes
                 + "<br>Saludos";
         String subject = "Nueva Cita Agendada - "+patient.getClinic();
         try {
@@ -77,6 +87,11 @@ public class EmailService{
 
     public void sendsAppointementDeletionMessage(User nutritionist, User patient, Appointment appointment) {
         MimeMessage message = emailSender.createMimeMessage();
+        String minutes;
+        if (appointment.getStartingTime().getMinute()<10)
+            minutes = "0" + appointment.getStartingTime().getMinute();
+        else
+            minutes = "" + appointment.getStartingTime().getMinute();
         String text = "<h1>"
           + nutritionist.getClinic()
           + "</h1><br>Hola <b>"
@@ -85,7 +100,7 @@ public class EmailService{
           + nutritionist.getFirst_name()
           + ") con la siguiente fecha y hora: <br>"
           + "Fecha: " + appointment.getStartingTime().getDayOfMonth() + "/" + appointment.getStartingTime().getMonthValue() + "/" + appointment.getStartingTime().getYear()
-          + "   Hora: " + appointment.getStartingTime().getHour() + ":" + appointment.getStartingTime().getMinute()
+          + "   Hora: " + appointment.getStartingTime().getHour() + ":" + minutes
           + "<br> ha sido cancelada/rechazada.<br>Lamentamos las molestias. Saludos";
         String subject = "Cancelación - Rechazo de cita - "+patient.getClinic();
         try {
