@@ -252,6 +252,7 @@ public class NutriService{
         dietPlan.setComment(request.getComment());
         dietPlan.setDate(LocalDate.now());
         dietPlanRepository.save(dietPlan);
+        emailService.sendDietPlanCreationEmail(dietPlan);
     }
 
     public List<AlimentDTO> getAllAliments() {

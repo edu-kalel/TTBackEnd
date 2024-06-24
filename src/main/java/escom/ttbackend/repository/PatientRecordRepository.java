@@ -8,4 +8,6 @@ public interface PatientRecordRepository extends JpaRepository<PatientRecord, Lo
     List<PatientRecord> findByPatient_EmailOrderByDateDesc(String patientEmail);
 
     PatientRecord findFirstByPatient_EmailOrderByDateDesc(String patientEmail);
+
+    List<PatientRecord> findByPatient_Email(String patientEmail);
 }

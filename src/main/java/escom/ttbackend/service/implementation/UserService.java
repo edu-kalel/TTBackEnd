@@ -2,6 +2,8 @@ package escom.ttbackend.service.implementation;
 
 import escom.ttbackend.model.entities.Appointment;
 import escom.ttbackend.model.entities.DietPlan;
+import escom.ttbackend.model.entities.Meal;
+import escom.ttbackend.model.entities.PatientRecord;
 import escom.ttbackend.model.entities.Post;
 import escom.ttbackend.model.entities.User;
 import escom.ttbackend.model.enums.AppointmentStatus;
@@ -16,6 +18,7 @@ import escom.ttbackend.presentation.dto.SimpleUserDTO;
 import escom.ttbackend.presentation.dto.UserDTO;
 import escom.ttbackend.repository.AppointmentRepository;
 import escom.ttbackend.repository.DietPlanRepository;
+import escom.ttbackend.repository.MealRepository;
 import escom.ttbackend.repository.PatientRecordRepository;
 import escom.ttbackend.repository.PostRepository;
 import escom.ttbackend.repository.UserRepository;
@@ -44,6 +47,7 @@ public class UserService {
     private final DietPlanRepository dietPlanRepository;
     private final PatientRecordRepository patientRecordRepository;
     private final EmailService emailService;
+    private final MealRepository mealRepository;
 
 
     public UserDTO getUserDTObyID(String email){
@@ -55,10 +59,23 @@ public class UserService {
     public void deletePatient(String email) {
         List<Appointment> appointments = appointmentRepository.findByPatient_Email(email);
         List<Post> posts = postRepository.findByPatient_Email(email);
-        DietPlan dietPlan = dietPlanRepository.findByUser_Email(email);
-        appointmentRepository.deleteAll(appointments);
-        postRepository.deleteAll(posts);
-        dietPlanRepository.delete(dietPlan);
+        List<DietPlan> dietPlans = dietPlanRepository.findByUser_Email(email);
+        List<PatientRecord> patientRecords = patientRecordRepository.findByPatient_Email(email);
+        if (!appointments.isEmpty())
+            appointmentRepository.deleteAll(appointments);
+        if (!posts.isEmpty())
+            postRepository.deleteAll(posts);
+        if (!patientRecords.isEmpty())
+            patientRecordRepository.deleteAll(patientRecords);
+        if (!dietPlans.isEmpty()){
+            for (DietPlan dietPlan : dietPlans){
+                List<Meal> meals = mealRepository.findByDietPlan_IdDietPlan(dietPlan.getIdDietPlan());
+                if (!meals.isEmpty()){
+                    mealRepository.deleteAll(meals);
+                }
+            }
+            dietPlanRepository.deleteAll(dietPlans);
+        }
         userRepository.deleteById(email);
     }
 
