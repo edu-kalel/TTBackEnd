@@ -84,10 +84,13 @@ public class AdminService {
         user.setPhone(request.getPhone());
         if (!request.getPassword().isBlank())
             user.setPassword(passwordEncoder.encode(request.getPassword()));
-        if (/*(!request.getParent_email().isBlank())||*/(!request.getParent_email().equals("No parent"))){
+        if (!request.getParent_email().isBlank()){
             var parent = userRepository.findById(request.getParent_email())
                     .orElseThrow(() -> new UsernameNotFoundException("Parent User does not exist"));
             user.setParent(parent);
+        }
+        else {
+            user.setParent(null);
         }
         user.setRole(request.getRole());
         user.setDate_of_birth(request.getDate_of_birth());
