@@ -78,7 +78,8 @@ public class Mapper {
         return new PatientRecordResponse(
                 patientRecord.getIdPatientRecord(),
                 patientRecord.getPatientHeight(),
-                patientRecord.getPatientWeight()
+                patientRecord.getPatientWeight(),
+                patientRecord.getDate()
         );
     }
 
